@@ -1,0 +1,139 @@
+var H = Highcharts
+
+var sheetID = '1ZM37D7C7GfTYq4SU8BTvU8gyovIK0l_3wk_l074zQec'
+var range = 'Sheet1'
+
+var chart_title = 'Payments on the Median-Priced Home Have Risen in Every Market'
+
+var table_notes = '<b>Notes</b>: Monthly payments are on the median priced home and assume a 3.5% downpayment on a 30-year fixed-rate loan and 0.55% mortgage insurance, 0.35% property insurance, and 1.15% property tax rates. </a><br/><b>Source</b>: <a href="https://www.jchs.harvard.edu/" target="_blank">Harvard Joint Center for Housing Studies</a> tabulations of Freddie Mac, Primary Mortgage Market Surveys; National Association of Realtors, Existing Home Sales; Moody’s Analytics estimates.'
+
+var export_notes = 'For more detail on the data, see <a href="https://www.zillow.com/research/data/" target="_blank">Zillow\'s methodology.</a><br/> Source: <a href="https://www.jchs.harvard.edu/" target="_blank">Harvard Joint Center for Housing Studies</a> tabulations of Zillow data.'
+
+var export_filename = "Housing Costs on the Median-Priced Home Are Skyrocketing in Many Markets - Harvard JCHS State of the Nation's Housing 2026"
+
+var metro_selection = 'United States'
+
+var categories = [],
+    ref_data = [],
+    selected_data = [],
+    chart_options = {},
+    chart = {}
+
+/*~~~~~~~ Document ready function ~~~~~~~*/
+$(document).ready(function() {
+  //get Google sheet data
+  $.get(H.JCHS.requestURL(sheetID, range), function(obj) {
+    categories = obj.values[1].slice(1)
+    ref_data = obj.values.slice(2)
+
+    //create the chart, title, notes, and search box
+    createChart(metro_selection) 
+    //$('#chart_title').html(chart_title)
+    $('#table_notes').html(table_notes)
+H.JCHS.createSearchBox(ref_data, createChart,'', 0, 'dropdown', 'Select a market...')
+}) //end document.ready
+
+function createChart(data_selection) {
+
+  /*~~~~~~~ Build Chart Data ~~~~~~~*/
+  selected_data = []
+  metro_selection = data_selection
+  ref_data.forEach(function (row) {
+    if (row[0] == data_selection) {
+      selected_data.push({
+        name: 'Total Monthly Housing Costs',
+        data: row.slice(2,146),
+        type: 'spline',
+        zIndex: 2      })
+    } // end if
+    
+   // if (row[0] == data_selection) {
+     // selected_data.push({
+       // name: 'Typical Home Value',
+       // data: row.slice(82,163),
+       // zIndex: 1,
+       // type: 'spline',
+      //})
+    //} // end if
+  }) //end forEach
+
+
+  /*~~~~~~~ Chart Options ~~~~~~~*/
+  chart_options = {
+    JCHS: {
+      yAxisTitle: 'Total Monthly Costs on the Median-Priced Home (Dollars)',
+      sheetID: sheetID,
+      tableNotes: table_notes,
+    },
+
+    series: selected_data,
+
+    xAxis: {
+      title: {
+        text: data_selection,
+      },
+      tickInterval: 20,
+      categories: categories,
+      labels: {
+        formatter: function () {
+          return this.value.slice(0)
+        }
+      }
+    },
+
+    plotOptions: {
+      series: {
+        connectNulls: false
+      }
+    },
+
+    // Custom tooltip content
+    tooltip: {
+      shared: false,
+      formatter: function() {
+        
+        var series = this.series
+        var point = this.point
+        
+        var tooltip_text = ''
+        tooltip_text +=  '<b>' +  point.series.name + ',</b> ' + this.x + '</br><i>Payment Amount: </i>$' + H.JCHS.numFormat(point.y, 0) + '</b>'
+
+        ref_data.forEach(function (row) {
+          if (row[0] == data_selection && point.series.name=='Typical Rent') {
+            tooltip_text +=  '<br><i>' + 'Typical Rent:</i> $' + H.JCHS.numFormat(row.slice(163,244)[point.x])
+          } else if (row[0] == data_selection && point.series.name=='Typical Home Value') {
+            tooltip_text +=  '<br><i>' + 'Typical Home Value:</i> $' + H.JCHS.numFormat(row.slice(244,325)[point.x])
+          }
+        })
+       
+        return tooltip_text
+      }
+    },
+
+    // Exporting options
+    exporting: {
+      filename: export_filename,
+      JCHS: { sheetID: sheetID },
+      chartOptions: {
+        chart: {
+          marginBottom: 130 
+        },
+        title: { text: 'Housing Costs on the Median-Priced Home Are Rising Rapidly'},
+        legend: { 
+          y: -45
+        },
+      },
+      buttons: {
+        contextButton: {
+          menuItems: ['viewFullDataset', 'separator', 'downloadPDF', 'separator', 'downloadPNG', 'downloadJPEG']
+        } //end contextButtons
+      } //end buttons
+    } //end exporting
+  } //end chart_options
+  
+  /*~~~~~~~ Create Chart ~~~~~~~*/
+  chart = Highcharts.chart(
+    'container',
+    chart_options
+  ) //end chart
+} //end createChart()
