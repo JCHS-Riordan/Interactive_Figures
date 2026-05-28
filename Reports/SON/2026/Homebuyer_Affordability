@@ -12,6 +12,7 @@ var export_notes = 'For more detail on the data, see <a href="https://www.zillow
 var export_filename = "Housing Costs on the Median-Priced Home Are Skyrocketing in Many Markets - Harvard JCHS State of the Nation's Housing 2026"
 
 var metro_selection = 'United States'
+var metro_selection2 = ''
 
 var categories = [],
     ref_data = [],
@@ -30,31 +31,45 @@ $(document).ready(function() {
     createChart(metro_selection) 
     //$('#chart_title').html(chart_title)
     $('#table_notes').html(table_notes)
-H.JCHS.createSearchBox(ref_data, createChart,'', 0, 'dropdown', 'Select a market...')
+H.JCHS.createSearchBoxes(2, ref_data, createChart, '', 0, 'dropdown', 
+  ['Select a market...', 'Select a comparison market (optional)...'])
 }) //end document.ready
 
-function createChart(data_selection) {
+function createChart(data_selection, data_selection2) {
+
+  // Fall back to last known selection if box 1 is empty
+  data_selection = data_selection || metro_selection
+
+  // If data_selection2 is undefined (initial load), use metro_selection2
+  // If it's an empty string (user hasn't picked one), that's fine too
+  if (data_selection2 === undefined) {
+    data_selection2 = metro_selection2
+  }
 
   /*~~~~~~~ Build Chart Data ~~~~~~~*/
   selected_data = []
   metro_selection = data_selection
+  metro_selection2 = data_selection2
+
   ref_data.forEach(function (row) {
+    // First metro series
     if (row[0] == data_selection) {
       selected_data.push({
-        name: 'Total Monthly Housing Costs',
-        data: row.slice(2,146),
+        name: data_selection,   // Metro name as series name (shows in legend/tooltip)
+        data: row.slice(2, 146),
         type: 'spline',
-        zIndex: 2      })
-    } // end if
-    
-   // if (row[0] == data_selection) {
-     // selected_data.push({
-       // name: 'Typical Home Value',
-       // data: row.slice(82,163),
-       // zIndex: 1,
-       // type: 'spline',
-      //})
-    //} // end if
+        zIndex: 2
+      })
+    }
+    // Second metro series (only if a second metro was selected)
+    if (data_selection2 && row[0] == data_selection2) {
+      selected_data.push({
+        name: data_selection2,  // Metro name as series name
+        data: row.slice(2, 146),
+        type: 'spline',
+        zIndex: 1
+      })
+    }
   }) //end forEach
 
 
@@ -68,9 +83,17 @@ function createChart(data_selection) {
 
     series: selected_data,
 
+    // Show legend so user can tell which line is which
+    legend: {
+      enabled: true
+    },
+
     xAxis: {
       title: {
-        text: data_selection,
+        // Show both metro names in title if two are selected, otherwise just one
+        text: data_selection2 
+          ? data_selection + ' vs. ' + data_selection2 
+          : data_selection,
       },
       tickInterval: 20,
       categories: categories,
@@ -92,17 +115,19 @@ function createChart(data_selection) {
       shared: false,
       formatter: function() {
         
-        var series = this.series
         var point = this.point
         
         var tooltip_text = ''
-        tooltip_text +=  '<b>' +  point.series.name + ',</b> ' + this.x + '</br><i>Payment Amount: </i>$' + H.JCHS.numFormat(point.y, 0) + '</b>'
+        tooltip_text += '<b>' + point.series.name + ',</b> ' + this.x + 
+          '</br><i>Payment Amount: </i>$' + H.JCHS.numFormat(point.y, 0) + '</b>'
 
         ref_data.forEach(function (row) {
-          if (row[0] == data_selection && point.series.name=='Typical Rent') {
-            tooltip_text +=  '<br><i>' + 'Typical Rent:</i> $' + H.JCHS.numFormat(row.slice(163,244)[point.x])
-          } else if (row[0] == data_selection && point.series.name=='Typical Home Value') {
-            tooltip_text +=  '<br><i>' + 'Typical Home Value:</i> $' + H.JCHS.numFormat(row.slice(244,325)[point.x])
+          if (row[0] == data_selection && point.series.name == 'Typical Rent') {
+            tooltip_text += '<br><i>' + 'Typical Rent:</i> $' + 
+              H.JCHS.numFormat(row.slice(163, 244)[point.x])  // Fixed dot bug here
+          } else if (row[0] == data_selection && point.series.name == 'Typical Home Value') {
+            tooltip_text += '<br><i>' + 'Typical Home Value:</i> $' + 
+              H.JCHS.numFormat(row.slice(244, 325)[point.x])  // Fixed dot bug here
           }
         })
        
@@ -126,14 +151,14 @@ function createChart(data_selection) {
       buttons: {
         contextButton: {
           menuItems: ['viewFullDataset', 'separator', 'downloadPDF', 'separator', 'downloadPNG', 'downloadJPEG']
-        } //end contextButtons
-      } //end buttons
-    } //end exporting
+        }
+      }
+    }
   } //end chart_options
   
   /*~~~~~~~ Create Chart ~~~~~~~*/
   chart = Highcharts.chart(
     'container',
     chart_options
-  ) //end chart
+  )
 } //end createChart()
