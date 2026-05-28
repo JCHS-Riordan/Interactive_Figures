@@ -13,6 +13,8 @@ var export_filename = "Housing Costs on the Median-Priced Home Are Skyrocketing 
 
 var metro_selection = 'United States'
 var metro_selection2 = ''
+var metro_selection3 = ''
+
 
 var categories = [],
     ref_data = [],
@@ -22,49 +24,55 @@ var categories = [],
 
 /*~~~~~~~ Document ready function ~~~~~~~*/
 $(document).ready(function() {
-  //get Google sheet data
   $.get(H.JCHS.requestURL(sheetID, range), function(obj) {
-    categories = obj.values[1].slice(1)
+    categories = obj.values[1].slice(2)
     ref_data = obj.values.slice(2)
 
-    //create the chart, title, notes, and search box
     createChart(metro_selection) 
-    //$('#chart_title').html(chart_title)
     $('#table_notes').html(table_notes)
-H.JCHS.createSearchBoxes(2, ref_data, createChart, '', 0, 'dropdown', 
-  ['Select a market...', 'Select a comparison market (optional)...'])
+    H.JCHS.createSearchBoxes(3, ref_data, createChart, '', 0, 'dropdown', 
+      ['Select a market...', 
+      'Select a comparison market (optional)...', 
+      'Select a third market (optional)...'])
+  })  
 }) //end document.ready
 
-function createChart(data_selection, data_selection2) {
+function createChart(data_selection, data_selection2, data_selection3) {
 
-  // Fall back to last known selection if box 1 is empty
+  // Fallbacks
   data_selection = data_selection || metro_selection
-
-  // If data_selection2 is undefined (initial load), use metro_selection2
-  // If it's an empty string (user hasn't picked one), that's fine too
-  if (data_selection2 === undefined) {
-    data_selection2 = metro_selection2
-  }
+  if (data_selection2 === undefined) { data_selection2 = metro_selection2 }
+  if (data_selection3 === undefined) { data_selection3 = metro_selection3 }  
 
   /*~~~~~~~ Build Chart Data ~~~~~~~*/
   selected_data = []
   metro_selection = data_selection
   metro_selection2 = data_selection2
+  metro_selection3 = data_selection3
 
   ref_data.forEach(function (row) {
     // First metro series
     if (row[0] == data_selection) {
       selected_data.push({
-        name: data_selection,   // Metro name as series name (shows in legend/tooltip)
+        name: data_selection,
         data: row.slice(2, 146),
         type: 'spline',
         zIndex: 2
       })
     }
-    // Second metro series (only if a second metro was selected)
+    // Second metro series
     if (data_selection2 && row[0] == data_selection2) {
       selected_data.push({
-        name: data_selection2,  // Metro name as series name
+        name: data_selection2,
+        data: row.slice(2, 146),
+        type: 'spline',
+        zIndex: 1
+      })
+    }
+    // Third metro series
+    if (data_selection3 && row[0] == data_selection3) {
+      selected_data.push({
+        name: data_selection3,
         data: row.slice(2, 146),
         type: 'spline',
         zIndex: 1
@@ -90,10 +98,7 @@ function createChart(data_selection, data_selection2) {
 
     xAxis: {
       title: {
-        // Show both metro names in title if two are selected, otherwise just one
-        text: data_selection2 
-          ? data_selection + ' vs. ' + data_selection2 
-          : data_selection,
+        text: 'Year:Quarter'
       },
       tickInterval: 20,
       categories: categories,
@@ -112,25 +117,15 @@ function createChart(data_selection, data_selection2) {
 
     // Custom tooltip content
     tooltip: {
-      shared: false,
+      shared: true,  
       formatter: function() {
-        
-        var point = this.point
-        
-        var tooltip_text = ''
-        tooltip_text += '<b>' + point.series.name + ',</b> ' + this.x + 
-          '</br><i>Payment Amount: </i>$' + H.JCHS.numFormat(point.y, 0) + '</b>'
-
-        ref_data.forEach(function (row) {
-          if (row[0] == data_selection && point.series.name == 'Typical Rent') {
-            tooltip_text += '<br><i>' + 'Typical Rent:</i> $' + 
-              H.JCHS.numFormat(row.slice(163, 244)[point.x])  // Fixed dot bug here
-          } else if (row[0] == data_selection && point.series.name == 'Typical Home Value') {
-            tooltip_text += '<br><i>' + 'Typical Home Value:</i> $' + 
-              H.JCHS.numFormat(row.slice(244, 325)[point.x])  // Fixed dot bug here
-          }
+        // this.x is the category (Year:Quarter)
+        // this.points is an array of all series at this x position
+        var tooltip_text = '<b>' + this.x + '</b>'
+        this.points.forEach(function(point) {
+          tooltip_text += '<br/><b>' + point.series.name + ':</b> $' + 
+            H.JCHS.numFormat(point.y, 0)
         })
-       
         return tooltip_text
       }
     },
