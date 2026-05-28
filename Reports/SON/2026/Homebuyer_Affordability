@@ -117,14 +117,12 @@ function createChart(data_selection, data_selection2, data_selection3) {
 
     // Custom tooltip content
     tooltip: {
-      shared: true,  
+      shared: true,
       formatter: function() {
-        // this.x is the category (Year:Quarter)
-        // this.points is an array of all series at this x position
         var tooltip_text = '<b>' + this.x + '</b>'
         this.points.forEach(function(point) {
-          tooltip_text += '<br/><b>' + point.series.name + ':</b> $' + 
-            H.JCHS.numFormat(point.y, 0)
+          tooltip_text += '<br/><span class="highcharts-color-' + point.colorIndex + '">●</span> <b>' + 
+            point.series.name + ':</b> $' + H.JCHS.numFormat(point.y, 0)
         })
         return tooltip_text
       }
