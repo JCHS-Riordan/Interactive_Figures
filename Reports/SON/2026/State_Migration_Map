@@ -1,0 +1,323 @@
+var H = Highcharts
+var states = Highcharts.geojson(Highcharts.maps['countries/us/state20_simplified'])
+
+var sheetID = '1bL_VzBzT0Uvwv3FCSsxrK6socdkr7SwAMdWeZxxdJeo'
+var range = 'Data v2025'
+
+var table_notes = '<b>Notes:</b> Natural population change is the difference between births and deaths. Immigration refers to net international migration.<br/> <b>Source: </b><a href="https://www.jchs.harvard.edu/" target="_blank">Harvard Joint Center for Housing Studies</a> tabulations of US Census Bureau, Vintage 2025 Population Estimates.'
+
+var component = 'Net Domestic Migration'
+
+var default_selection = 2
+var selected_state_name = ""
+var selected_GEOID = ""
+
+var categories = [],
+    ref_data = [],
+    selected_data = [],
+    chart_options = {},
+    chart = {},
+    drilldown_chart = {}
+
+var domig_legend_title = 'Net Domestic Migration Rate<br/>(per 1,000 People), 2024'
+var immig_legend_title = 'Immigration Rate<br/>(per 1,000 people), 2024'
+var natchg_legend_title = 'Natural Change Rate<br/>(per 1,000 people), 2024'
+
+var default_legend = function () {
+  if ((this.to == -4.9)) { 
+    return 'Loss: 5 or More'
+  } else if ((this.from == -4.9) && (this.to == 0)) {
+    return 'Loss: Up to 5'
+  } else if ((this.from == 0) && (this.to == 5)) {
+    return 'Gain: Up to 5'
+  } else if ((this.from == 5)) {
+    return 'Gain: 5 or More'
+  }
+}
+
+var default_classes = [
+  { to : -4.9 },
+  { from: -4.9, to: 0 }, 
+  { from: 0, to: 5 },
+  { from: 5 }
+]
+
+var default_zones = [
+  {
+    value: -5,
+    className: 'zone-0'
+  },
+  {
+    value: 0,
+    className: 'zone-1'
+  },
+  {
+    value: 5,
+    className: 'zone-2'
+  },
+  {
+    className: 'zone-3'
+  }
+]
+
+var selected_zones = default_zones
+
+/*~~~~~~~ Document ready function ~~~~~~~*/
+$(document).ready(function() {
+  //get Google sheet data
+  $.get(H.JCHS.requestURL(sheetID, range), function(obj) {
+    categories = obj.values[1].slice(2)
+    ref_data = obj.values.slice(2)
+    
+    //create the notes
+    $('#table_notes').html(table_notes)
+    
+    //create the chart
+    createChart() 
+
+  }) 
+}) //end document.ready
+
+
+function createChart() {
+
+  selected_data = ref_data.map(function (x) {
+    return [x[0], x[2]] //return data in 2 columns, GEOID and the value to be mapped
+
+  })
+
+  /*~~~~~~~ Chart Options ~~~~~~~*/
+  chart_options = {
+    JCHS: {
+      drilldownFunction: drilldownChart,
+      tableNotes: table_notes
+    },
+    chart: {
+      events: {
+        load: function() {
+          initUserInteraction(),
+            drilldownChart('Florida','12') //default drilldown chart
+        },
+       },
+    },
+
+    legend: {
+        title: {
+          text: domig_legend_title
+        },
+      labelFormatter: default_legend
+    },
+    colorAxis: {
+      dataClasses: default_classes
+    },
+    series: [
+      {
+        type: 'map',
+        name: categories[default_selection],
+        mapData: states,
+        data: selected_data,
+        allowPointSelect: false
+      }
+    ], //end series
+
+
+    // Exporting options
+    exporting: {
+      filename: component + ' by State - Harvard JCHS - State of the Nation\'s Housing 2025',
+      JCHS: { sheetID: sheetID},
+      chartOptions: {
+        title: { text: 'Domestic Migration is Slowing'},
+        chart: {
+          /* MA addition */
+          events: {
+            load: function() {
+              this.container.classList.add('JCHS-chart__export-class')
+            }
+          },
+          marginTop: 20,
+          marginRight: 90,
+          marginBottom: 25
+        },
+        legend: {
+          y: -75,
+          x: 20
+        }
+      },
+      buttons: {
+        contextButton: {
+          menuItems: ['viewFullDataset', 'separator', 'downloadPDF', 'separator', 'downloadPNG', 'downloadJPEG'] 
+        } //end contextButtons
+      } //end buttons
+    }, //end exporting
+    
+    tooltip: {
+      formatter: function() {
+        var point = this.point
+        var series = this.series
+        var user_selection = $('#user_input :checked').val()   
+        
+        var tooltip_text = ''
+        tooltip_text +=  '<b>' +  point.name + '</b>'
+
+        ref_data.forEach(function (row) {
+          if (row[0] == point.GEOID) {
+            switch (user_selection) {
+              case '2':
+                tooltip_text += '<br/><i>Net Domestic Migration </i>'
+                tooltip_text += '<br>Rate: <b>' + H.JCHS.numFormat(row[2]) + '</b>'
+                tooltip_text += '<br>Net Change: <b>' + H.JCHS.numFormat(row[5]) + '</b>'
+                break
+              case '3':
+                tooltip_text += '<br/><i>Immigration </i>'
+                tooltip_text += '<br>Rate: <b>' + H.JCHS.numFormat(row[3]) + '</b>'
+                tooltip_text += '<br>Net Change: <b>' + H.JCHS.numFormat(row[6]) + '</b>'
+                break
+              case '4':
+                tooltip_text += '<br/><i>Natural Population Change </i>'
+                tooltip_text += '<br>Rate: <b>' + H.JCHS.numFormat(row[4]) + '</b>'
+                tooltip_text += '<br>Net Change: <b>' + H.JCHS.numFormat(row[7]) + '</b>'
+                break   
+            }
+            tooltip_text += '<br/><b><i>Click state to see changes over time</b></i>'
+          }
+        })
+        return tooltip_text
+      }
+    }
+  } //end chart_options
+
+  /*~~~~~~~ Create Chart ~~~~~~~*/
+  chart = Highcharts.mapChart(
+    'container',
+    chart_options
+  ) //end chart
+  
+} //end createChart()
+
+/*~~~~~~~~~~~~~~ User interaction ~~~~~~~~~~~~~~~~~~~*/
+function drilldownChart(state_name, GEOID) {
+  
+  selected_state_name = state_name
+  selected_GEOID = GEOID
+  
+  var chart_data = []
+    
+  ref_data.forEach(function (el) {
+    if (el[0] == GEOID) {
+      switch ($('#user_input :checked').val()) {
+        case '2':  
+          chart_data = el.slice(8,19)
+          break
+        case '3':  
+          chart_data = el.slice(19,30) 
+          break
+        case '4':
+          chart_data = el.slice(30,41) 
+          break
+      } //end switch
+    } //end if
+  }) //end forEach
+  
+  var drilldown_options = {
+    JCHS: {
+      yAxis_title: 'Number'
+    },
+
+    subtitle: {
+      text: 
+      state_name + ': ' + component + ' Rate (per 1,000 people)'
+    },
+
+
+    yAxis: {
+      labels: {
+        formatter: function() {
+          return H.JCHS.numFormat(this.value) 
+        }
+      }
+    },
+    
+    chart: {
+      marginLeft: 60
+    },
+
+    xAxis: {
+      categories: [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025]
+    },
+
+    tooltip: {
+      formatter: function() {
+        var tooltip_text = ''
+        //tooltip_text += '<b>' + component + ', '
+        tooltip_text += '<b>' + this.x + '</b>: '
+        tooltip_text += H.JCHS.numFormat(this.y, 1) + ' per 1,000 people'
+        return tooltip_text
+
+      }
+    },
+
+    series: [
+      {
+        name: state_name,
+        data: chart_data,
+        type: 'column',
+        zones: selected_zones,
+    }],
+  }
+
+  drilldown_chart = Highcharts.chart(
+    'drilldown_chart',
+    H.merge(H.JCHS.drilldownOptions, drilldown_options)
+  )
+} //end drilldownChart()
+
+
+function initUserInteraction () {
+  $('#user_input').on('change', function () {
+    var new_col = parseInt($('#user_input :checked').val())
+    var new_data = ref_data.map(function (x) {
+      return [x[0], x[new_col]]
+    })
+    chart.series[0].update({name: categories[new_col]})   
+    chart.series[0].setData(new_data) 
+
+    switch(new_col) {
+      case 2:
+        component = 'Net Domestic Migration',
+        chart.legend.update({
+          title: {
+            text: domig_legend_title
+          } }),
+          chart.exporting.update({chartOptions: {
+            title: { text: 'Domestic Migration is Slowing'}   
+          }})
+        break
+      case 3:
+        component = 'Immigration',
+        chart.legend.update({
+          title: {
+            text: immig_legend_title
+          } }),
+          chart.exporting.update({chartOptions: {
+            title: { text: 'Immigration is Driving Population Change'}   
+          }})
+        break
+      case 4:
+        component = 'Natural Population Change',
+        chart.legend.update({
+          title: {
+            text: natchg_legend_title
+          }  }),
+          chart.exporting.update({chartOptions: {
+            title: { text: 'Natural Population Change Remains Low'}   
+          }})
+    }
+
+    chart.exporting.update({
+      filename: component + ' by State - Harvard JCHS - State of the Nation\'s Housing 2025'
+    })
+    
+    drilldownChart(selected_state_name, selected_GEOID)
+
+  })
+}
