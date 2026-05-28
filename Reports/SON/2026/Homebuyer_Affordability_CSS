@@ -1,0 +1,26 @@
+@import url('https://code.highcharts.com/6.1.4/css/highcharts.css');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400');
+@import url('https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/css/JCHS-highcharts.css');
+
+.highcharts-color-0 { fill: #43273B; stroke: #43273B; color: #43273B; }
+.highcharts-color-1 { fill: #F26829; stroke: #F26829; color: #F26829; }
+.highcharts-color-2 { fill: #4A90D9; stroke: #4A90D9; color: #4A90D9; }
+
+/*Changing the tooltip bullet point colors to match the corresponding series color*/
+.highcharts-tooltip span.highcharts-color-0 {color: #43273B; }
+.highcharts-tooltip span.highcharts-color-1 {color: #F26829; }
+.highcharts-tooltip span.highcharts-color-2 {color: #4A90D9; }
+
+.highcharts-axis-labels {
+  font-size: 12.5px;
+}
+.highcharts-axis-title {
+  font-size: 14px;
+}
+.tooltip-instruct {
+  font-weight: 500;
+  font-size: 18px;
+  text-align: center;
+  font-style: italic;
+  color: #C14D00;
+}
