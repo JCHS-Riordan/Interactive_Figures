@@ -3,21 +3,14 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400');
 @import url('https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/css/JCHS-highcharts.css');
 
-/* SON 2024 standard color scale */
-.highcharts-color-0 { fill: #507687; stroke: #507687; color: #507687; }
-.highcharts-color-1 { fill: #96adb7; stroke: #96adb7; color: #96adb7; }
-.highcharts-color-2 { fill: #f89f5c; stroke: #f89f5c; color: #f89f5c; }
-.highcharts-color-3 { fill: #bf4f27; stroke: #bf4f27; color: #bf4f27; }
+.highcharts-color-0 { fill: #323e3d; stroke: #323e3d; color: #323e3d; }
+.highcharts-color-1 { fill: #507687; stroke: #507687; color: #507687; }
+.highcharts-color-2 { fill: #afccbf; stroke: #afccbf; color: #afccbf; } /*96adb7*/
+.highcharts-color-3 { fill: #f89f5c; stroke: #f89f5c; color: #f89f5c; }
+.highcharts-color-4 { fill: #bf4f27; stroke: #bf4f27; color: #bf4f27; }
 
-/* Export legend sizing */
-.JCHS-chart__export-class .highcharts-legend-title {
-  font-size: .9em;
-}
-.JCHS-chart__export-class .highcharts-legend-item {
-  font-size: .8em;
-}
-
-/* Zone CSS for drilldown chart - 5 zones matching the colorAxis classes */
+/* Zone color overrides - 5 zones for price-to-income ratio scheme
+   Overrides JCHS default 4-zone scheme */
 .highcharts-area.zone-0,
 .highcharts-point.zone-0  { stroke: #323e3d; fill: #323e3d; }
 .highcharts-graph.zone-0  { stroke: #323e3d; }
@@ -34,65 +27,32 @@
 .highcharts-point.zone-3  { stroke: #f89f5c; fill: #f89f5c; }
 .highcharts-graph.zone-3  { stroke: #f89f5c; }
 
+/* zone-4 has no JCHS default - new class for 5th range */
 .highcharts-area.zone-4,
 .highcharts-point.zone-4  { stroke: #bf4f27; fill: #bf4f27; }
 .highcharts-graph.zone-4  { stroke: #bf4f27; }
 
-/* Drilldown chart - JCHS standard dimensions */
+/* Drilldown size override
+   JCHS default: width 380px, min-height 300px
+   This chart needs wider/shorter to match map width */
 .JCHS-chart__drilldown {
   min-height: 180px;
   width: 650px;
-  max-width: 100%;
-  margin: 20px auto;
-  background: none;
 }
 
-/* Year slider */
-#year_slider {
-  margin: 25px auto 10px;
-  -webkit-appearance: none;
-  width: 100%;
-  max-width: 300px;
-  height: 15px;
-  border-radius: 3px;
-  background: #E4DCD5;
-  outline: none;
-  display: block;
-}
-
-#year_slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 20%;
-  background: #507687; /* Bug fix: was #4E7686, corrected to JCHS teal */
-  cursor: pointer;
-}
-
-#year_slider::-moz-range-thumb {
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 20%;
-  background: #507687; /* Bug fix: was #4E7686, corrected to JCHS teal */
-  cursor: pointer;
-}
-
-/* Bug fix: removed position:fixed, which positioned relative to viewport not chart */
-#year_label {
-  text-align: center;
-  font-family: 'Open Sans', sans-serif;
-  color: rgba(100, 100, 100, 0.9);
-  font-size: 1.25em;
-  margin: 0;
-}
-
-/* Tooltip mini-chart container */
+/* Tooltip mini-chart container - no JCHS equivalent */
 .tooltip_chart {
   height: 120px;
   width: 100%;
   max-width: 300px;
   margin: auto;
   padding: 0;
+}
+
+/* Export legend sizing */
+.JCHS-chart__export-class .highcharts-legend-title {
+  font-size: .9em;
+}
+.JCHS-chart__export-class .highcharts-legend-item {
+  font-size: .8em;
 }

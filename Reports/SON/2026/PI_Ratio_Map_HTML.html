@@ -1,7 +1,11 @@
 <div id="chart_wrapper" class="JCHS-chart__wrapper">
   <div id="form_wrapper" class="JCHS-chart__user-input">
-    <input id="year_slider" type="range" min="2" max="47" value="47">
-    <p id="year_label">2025</p>
+    <div class="JCHS-chart__slider__wrapper" style="width: 300px;">
+      <!-- width override: JCHS default is 200px, too narrow for a 46-year range -->
+      <input id="year_slider" type="range" min="2" max="47" value="47"
+             class="JCHS-chart__slider">
+      <p id="year_label" class="JCHS-chart__slider__label">2025</p>
+    </div>
   </div>
   <div id="container" class="JCHS-chart__container"></div>
   <div id="drilldown_chart" class="JCHS-chart__drilldown"></div>
