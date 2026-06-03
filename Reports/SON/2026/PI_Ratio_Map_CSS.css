@@ -1,33 +1,29 @@
-/* JCHS standard imports */
 @import url('https://code.highcharts.com/6.1.4/css/highcharts.css');
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400');
 @import url('https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/css/JCHS-highcharts.css');
 
-.highcharts-color-0 { fill: #323e3d; stroke: #323e3d; color: #323e3d; }
-.highcharts-color-1 { fill: #507687; stroke: #507687; color: #507687; }
-.highcharts-color-2 { fill: #afccbf; stroke: #afccbf; color: #afccbf; } /*96adb7*/
+.highcharts-color-0 { fill: #313E3D; stroke: #313E3D; color: #313E3D; }
+.highcharts-color-1 { fill: #507688; stroke: #507688; color: #507688; }
+.highcharts-color-2 { fill: #D5E4EC; stroke: #D5E4EC; color: #D5E4EC; }
 .highcharts-color-3 { fill: #f89f5c; stroke: #f89f5c; color: #f89f5c; }
 .highcharts-color-4 { fill: #bf4f27; stroke: #bf4f27; color: #bf4f27; }
 
-/* Zone color overrides - 5 zones for price-to-income ratio scheme
-   Overrides JCHS default 4-zone scheme */
 .highcharts-area.zone-0,
-.highcharts-point.zone-0  { stroke: #323e3d; fill: #323e3d; }
-.highcharts-graph.zone-0  { stroke: #323e3d; }
+.highcharts-point.zone-0  { stroke: #313E3D; fill: #313E3D; }
+.highcharts-graph.zone-0  { stroke: #313E3D; }
 
 .highcharts-area.zone-1,
-.highcharts-point.zone-1  { stroke: #507687; fill: #507687; }
-.highcharts-graph.zone-1  { stroke: #507687; }
+.highcharts-point.zone-1  { stroke: #507688; fill: #507688; }
+.highcharts-graph.zone-1  { stroke: #507688; }
 
 .highcharts-area.zone-2,
-.highcharts-point.zone-2  { stroke: #afccbf; fill: #afccbf; }
-.highcharts-graph.zone-2  { stroke: #afccbf; }
+.highcharts-point.zone-2  { stroke: #D5E4EC; fill: #D5E4EC; }
+.highcharts-graph.zone-2  { stroke: #D5E4EC; }
 
 .highcharts-area.zone-3,
 .highcharts-point.zone-3  { stroke: #f89f5c; fill: #f89f5c; }
 .highcharts-graph.zone-3  { stroke: #f89f5c; }
 
-/* zone-4 has no JCHS default - new class for 5th range */
 .highcharts-area.zone-4,
 .highcharts-point.zone-4  { stroke: #bf4f27; fill: #bf4f27; }
 .highcharts-graph.zone-4  { stroke: #bf4f27; }
@@ -38,15 +34,6 @@
 .JCHS-chart__drilldown {
   min-height: 180px;
   width: 650px;
-}
-
-/* Tooltip mini-chart container - no JCHS equivalent */
-.tooltip_chart {
-  height: 120px;
-  width: 100%;
-  max-width: 300px;
-  margin: auto;
-  padding: 0;
 }
 
 /* Export legend sizing */
