@@ -2,19 +2,17 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400');
 @import url('https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/css/JCHS-highcharts.css');
 
-/* Scale of SON 2024 colors */
 .highcharts-color-0 { fill: #507688; stroke: #507688; color: #507688; }
-.highcharts-color-1 { fill: #D5E4EC; stroke: #D5E4EC; color: #D5E4EC; }
+.highcharts-color-1 { fill: #93bacb; stroke: #93bacb; color: #93bacb; }
 .highcharts-color-2 { fill: #f89f5c; stroke: #f89f5c; color: #f89f5c; }
 .highcharts-color-3 { fill: #bf4f27; stroke: #bf4f27; color: #bf4f27; }
 
 #options_table {
   vertical-align: middle;
-  margin: 2px 120px;
+  margin: 2px 30px;
   font-size: 13px;
 }
 
-/* MA addition */
 .JCHS-chart__export-class .highcharts-legend-title {
   font-size: .9em;
 }
@@ -28,8 +26,8 @@
 .highcharts-point.zone-0  { stroke: #507688; fill: #507688; }
 .highcharts-graph.zone-0 { stroke: #507688; }
 .highcharts-area.zone-1, 
-.highcharts-point.zone-1  { stroke: #D5E4EC; fill: #D5E4EC; }
-.highcharts-graph.zone-1 { stroke: #D5E4EC; }
+.highcharts-point.zone-1  { stroke: #93bacb; fill: #93bacb; }
+.highcharts-graph.zone-1 { stroke: #93bacb; }
 .highcharts-area.zone-2, 
 .highcharts-point.zone-2 { stroke: #f89f5c; fill: #f89f5c; }
 .highcharts-graph.zone-2 { stroke: #f89f5c; }
