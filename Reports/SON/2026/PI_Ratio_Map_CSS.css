@@ -4,7 +4,7 @@
 
 .highcharts-color-0 { fill: #313E3D; stroke: #313E3D; color: #313E3D; }
 .highcharts-color-1 { fill: #507688; stroke: #507688; color: #507688; }
-.highcharts-color-2 { fill: #D5E4EC; stroke: #D5E4EC; color: #D5E4EC; }
+.highcharts-color-2 { fill: #93bacb; stroke: #93bacb; color: #93bacb; }
 .highcharts-color-3 { fill: #f89f5c; stroke: #f89f5c; color: #f89f5c; }
 .highcharts-color-4 { fill: #bf4f27; stroke: #bf4f27; color: #bf4f27; }
 
@@ -17,8 +17,8 @@
 .highcharts-graph.zone-1  { stroke: #507688; }
 
 .highcharts-area.zone-2,
-.highcharts-point.zone-2  { stroke: #D5E4EC; fill: #D5E4EC; }
-.highcharts-graph.zone-2  { stroke: #D5E4EC; }
+.highcharts-point.zone-2  { stroke: #93bacb; fill: #93bacb; }
+.highcharts-graph.zone-2  { stroke: #93bacb; }
 
 .highcharts-area.zone-3,
 .highcharts-point.zone-3  { stroke: #f89f5c; fill: #f89f5c; }
