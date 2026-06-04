@@ -33,7 +33,7 @@ $(document).ready(function() {
     H.JCHS.createSearchBoxes(3, ref_data, createChart, '', 0, 'dropdown', 
       ['Select a market...', 
       'Select a comparison market (optional)...', 
-      'Select a third market (optional)...'])
+      'Select another comparison market (optional)...'])
   })  
 }) //end document.ready
 
