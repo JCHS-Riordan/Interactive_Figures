@@ -85,7 +85,7 @@ function createChart() {
     },
 
     legend: {
-      title: { text: domig_legend_title },
+      title: { text: popchg_legend_title },
       labelFormatter: default_legend
     },
     colorAxis: {
