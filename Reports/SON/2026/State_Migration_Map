@@ -21,7 +21,7 @@ var categories = [],
 
 var popchg_legend_title = 'Population Change Rate<br/>(per 1,000 People), 2025'
 var domig_legend_title = 'Net Domestic Migration Rate<br/>(per 1,000 People), 2025'
-var immig_legend_title = 'Net International Migration Rate<br/>(per 1,000 people), 2025'
+var immig_legend_title = 'Immigration Rate<br/>(per 1,000 people), 2025'
 var natchg_legend_title = 'Natural Change Rate<br/>(per 1,000 people), 2025'
 
 var default_legend = function () {
