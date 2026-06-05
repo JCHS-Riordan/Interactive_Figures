@@ -67,7 +67,7 @@ $(document).ready(function() {
 function createChart() {
 
   selected_data = ref_data.map(function (x) {
-    return [x[0], x[default_selection]] // CHANGED: was x[2], now uses default_selection
+    return [x[0], x[default_selection]] 
   })
 
   chart_options = {
@@ -102,10 +102,10 @@ function createChart() {
     ],
 
     exporting: {
-      filename: component + ' by State - Harvard JCHS - State of the Nation\'s Housing 2025',
+      filename: component + ' by State - Harvard JCHS - State of the Nation\'s Housing 2026',
       JCHS: { sheetID: sheetID },
       chartOptions: {
-        title: { text: 'Domestic Migration is Slowing' },
+        title: { text: 'Population Change by State' },
         chart: {
           events: {
             load: function() {
@@ -116,7 +116,7 @@ function createChart() {
           marginRight: 90,
           marginBottom: 25
         },
-        legend: { y: -75, x: 20 }
+        legend: { y: -75, x: 0 }
       },
       buttons: {
         contextButton: {
@@ -138,8 +138,6 @@ function createChart() {
           if (row[0] == point.GEOID) {
             switch (user_selection) {
 
-              // CHANGED: Added case '2' for Population Change (new)
-              // Shifted all others up by 1; updated row[] indices for new column layout
               case '2':
                 tooltip_text += '<br/><i>Population Change </i>'
                 tooltip_text += '<br>Rate: <b>' + H.JCHS.numFormat(row[2]) + '</b>'
@@ -186,10 +184,8 @@ function drilldownChart(state_name, GEOID) {
     if (el[0] == GEOID) {
       switch ($('#user_input :checked').val()) {
 
-        // CHANGED: Added case '2' for Population Change (new)
-        // All slice indices updated for new column layout (+2 offset, new 4th series)
         case '2':
-          chart_data = el.slice(10, 21)   // Population Change 2015–2025 (NEW)
+          chart_data = el.slice(10, 21)   
           break
         case '3':                         // was case '2': el.slice(8,19)
           chart_data = el.slice(21, 32)   // Net Domestic Migration 2015–2025
@@ -258,33 +254,30 @@ function initUserInteraction () {
     chart.series[0].setData(new_data) 
 
     switch(new_col) {
-
-      // CHANGED: Added case 2 for Population Change (new)
-      // Shifted all others: 2→3, 3→4, 4→5
       case 2:
         component = 'Population Change'
         chart.legend.update({ title: { text: popchg_legend_title } })
-        chart.exporting.update({ chartOptions: { title: { text: 'Population Change by State' } } })
+        chart.exporting.update({ chartOptions: { title: { text: 'Population Change by State' }, legend: { y: -75, x: 0 } } })
         break
-      case 3:  // was case 2
+      case 3:  
         component = 'Net Domestic Migration'
         chart.legend.update({ title: { text: domig_legend_title } })
-        chart.exporting.update({ chartOptions: { title: { text: 'Domestic Migration is Slowing' } } })
+        chart.exporting.update({ chartOptions: { title: { text: 'Domestic Migration by State' }, legend: { y: -75, x: 20 } } })
         break
-      case 4:  // was case 3
+      case 4:  
         component = 'Net International Migration'
         chart.legend.update({ title: { text: immig_legend_title } })
-        chart.exporting.update({ chartOptions: { title: { text: 'Immigration is Driving Population Change' } } })
+        chart.exporting.update({ chartOptions: { title: { text: 'Immigration by State' }, legend: { y: -75, x: 0 } } })
         break
-      case 5:  // was case 4
+      case 5:  
         component = 'Natural Population Change'
         chart.legend.update({ title: { text: natchg_legend_title } })
-        chart.exporting.update({ chartOptions: { title: { text: 'Natural Population Change Remains Low' } } })
+        chart.exporting.update({ chartOptions: { title: { text: 'Natural Population Change by State' }, legend: { y: -75, x: 0 } } })
         break
-    }
+      }
 
     chart.exporting.update({
-      filename: component + ' by State - Harvard JCHS - State of the Nation\'s Housing 2025'
+      filename: component + ' by State - Harvard JCHS - State of the Nation\'s Housing 2026'
     })
     
     drilldownChart(selected_state_name, selected_GEOID)
