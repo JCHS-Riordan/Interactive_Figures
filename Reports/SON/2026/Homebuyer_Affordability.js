@@ -98,7 +98,7 @@ function createChart(data_selection, data_selection2, data_selection3) {
 
     xAxis: {
       title: {
-        text: 'Year:Quarter'
+        /*text: 'Year:Quarter'*/
       },
       tickInterval: 20,
       categories: categories,
