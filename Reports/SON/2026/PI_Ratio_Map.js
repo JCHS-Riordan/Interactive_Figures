@@ -72,7 +72,8 @@ function createChart() {
       layout: 'vertical',
       align: 'right',
       verticalAlign: 'middle',
-      y: 110,
+      y: 80,
+      x: -30,
       backgroundColor: 'rgba(255, 255, 255, 0.9)',
       labelFormatter: function() {
         if (!this.from && this.from !== 0) {
@@ -80,7 +81,7 @@ function createChart() {
         } else if (!this.to && this.to !== 0) {
           return this.from + '.0 and Over';
         } else {
-          return this.from + '.0 \u2013 ' + (this.to - 1) + '.9';
+          return this.from + '.0\u2013' + (this.to - 1) + '.9';
         }
       },
       itemStyle: { fontWeight: 'normal' }
@@ -171,8 +172,8 @@ function createChart() {
           marginBottom: 25
         },
         legend: {
-          y: -75,
-          x: 20
+          y: 80,
+          x: -40
         }
       },
       buttons: {
