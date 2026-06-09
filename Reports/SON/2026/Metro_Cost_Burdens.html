@@ -1,18 +1,25 @@
 <div id="chart_wrapper" class="JCHS-chart__wrapper">
+  <h3 id="chart_title" class="JCHS-chart__title"></h3>
   <div id="form_wrapper" class="JCHS-chart__user-input">
     <form id="user_input">
 <table id="options_table">
   <tr>
-    <td><label><input type="radio" name="demog_type" value="2" checked>Population Change</input></label></td>
-    <td><label><input type="radio" name="demog_type" value="3">Domestic Migration</input></label></td>
-      <td><label><input type="radio" name="demog_type" value="4">Immigration</input></label</td> 
-      <td><label><input type="radio" name="demog_type" value="5">Natural Change</input></label</td>
-      </tr>
+    <td class="table-label">Cost-Burdened:</td>
+    <td><label><input type="radio" name="demog_type" value="2">All Households</input></label></td>
+      <td><label><input type="radio" name="demog_type" value="3" checked>Renters</input></label</td>
+  <td><label><input type="radio" name="demog_type" value="4">Owners</input></label></td>
+</tr>
+<tr>
+  <td class="table-label">Severely Cost-Burdened:</td>
+  <td><label><input type="radio" name="demog_type" value="5">All Households</input></label></td>
+<td><label><input type="radio" name="demog_type" value="6">Renters</input></label></td>
+<td><label><input type="radio" name="demog_type" value="7">Owners</input></label></td>
+</tr>
 </table>
     </form>
   </div>
 <div id="container" class="JCHS-chart__container"></div>
-  <div id="drilldown_chart" class="JCHS-chart__drilldown"></div>
+<div id="search_box" class="JCHS-chart__search-box JCHS-chart__search-box--open-upward"></div>
 <div id="table_notes" class="JCHS-chart__table-notes"></div>
 </div>
 
@@ -25,4 +32,5 @@
 <script src="https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/js/JCHS-highcharts.js"></script>
 <script src="https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/js/JCHS-highcharts--map.js"></script>
 
+<script src="https://harvard-jchs.s3.amazonaws.com/interactive-tools/geojson/us_cbsas23.geojson"></script>
 <script src="https://harvard-jchs.s3.amazonaws.com/interactive-tools/geojson/us_states_simplified_highcharts.geojson"></script>
