@@ -2,7 +2,7 @@ var H = Highcharts
 var states = Highcharts.geojson(Highcharts.maps['countries/us/state20_simplified'])
 
 var sheetID = '1bL_VzBzT0Uvwv3FCSsxrK6socdkr7SwAMdWeZxxdJeo'
-var range = 'Data_v2025_rpopchg'
+var range = 'Data'
 
 var table_notes = '<b>Notes:</b> Natural population change is the difference between births and deaths. Immigration refers to net international migration.<br/> <b>Source: </b><a href="https://www.jchs.harvard.edu/" target="_blank">Harvard Joint Center for Housing Studies</a> tabulations of US Census Bureau, Vintage 2025 Population Estimates.'
 
