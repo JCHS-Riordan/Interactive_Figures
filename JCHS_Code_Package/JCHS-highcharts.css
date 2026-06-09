@@ -1,0 +1,475 @@
+/* change chart colors here */
+.highcharts-color-0 { fill: #8cb7c7; stroke: #8cb7c7; }
+.highcharts-color-1 { fill: #e0ba1b; stroke: #e0ba1b; }
+.highcharts-color-2 { fill: #3b1f2e; stroke: #3b1f2e; }
+.highcharts-color-3 { fill: #998b7d; stroke: #998b7d; }
+.highcharts-color-4 { fill: #c1b9b1; stroke: #c1b9b1; }
+
+/* change chart zone colors here */
+.highcharts-area.zone-0, 
+.highcharts-point.zone-0  { stroke: #467b91; fill: #467b91; }
+.highcharts-graph.zone-0 { stroke: #467b91; }
+.highcharts-area.zone-1, 
+.highcharts-point.zone-1  { stroke: #c8ded6; fill: #c8ded6; }
+.highcharts-graph.zone-1 { stroke: #c8ded6; }
+.highcharts-area.zone-2, 
+.highcharts-point.zone-2  { stroke: #f6e599; fill: #f6e599; }
+.highcharts-graph.zone-2 { stroke: #f6e599; }
+.highcharts-area.zone-3, 
+.highcharts-point.zone-3  { stroke: #c14d00; fill: #c14d00; }
+.highcharts-graph.zone-3 { stroke: #c14d00; }
+
+body {
+  margin: 0;
+}
+
+.JCHS-chart__wrapper {
+  width: 750px;
+  max-width: 100%;
+  margin: auto;
+  font-family: "Open Sans", sans-serif;
+  position: relative; /*necessary for modal to pop up only in div */
+}
+
+.JCHS-chart__title, .JCHS-chart__subtitle {
+  text-align: center;
+  font-weight: 400; 
+  color: #C14D00;
+  margin: 10px 5px;
+}
+
+.JCHS-chart__subtitle {
+  font-size: 16px;
+}
+
+.JCHS-chart__user-input {
+  margin: auto;
+  font-size: 13px;
+  text-align: center;
+}
+
+.JCHS-chart__user-input  *  {
+  margin: 0;
+  vertical-align: middle;
+  padding: 0 10px;
+}
+
+.JCHS-chart__user-input--table {
+  margin: auto;
+  font-size: 13px;
+  border: none;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+@media (max-width: 350px) {
+  .JCHS-chart__user-input--table td, input, label  {
+    font-size: 11px;
+  }
+  .highcharts-axis-title {
+    display: none;
+  }
+}
+
+.JCHS-chart__user-input__label {
+  text-align: right;
+}
+
+.JCHS-chart__container {
+  max-height: 500px;
+  width: 100%; 
+  margin: 0px auto;
+}
+
+@media (max-width: 500px) {
+  .JCHS-chart__container {
+    height: 350px;
+  }
+}
+
+@media (max-width: 400px) {
+  .JCHS-chart__container {
+    height: 300px;
+  }
+}
+
+.JCHS-chart__table-notes {
+  font-size: .7rem;
+  color: #666;
+  margin: 0 5px;
+}
+
+.JCHS-chart__table-notes--exporting {
+  font-size: 7.5px;
+  fill: #666;
+}
+
+.JCHS-chart__drilldown {
+  min-height: 300px;
+  width: 380px;
+  max-width: calc(100% - 17px);
+  margin: 0;
+  display: block;
+  background: none;
+}
+
+.JCHS-chart__search-box { 
+  /* NB: if you change this class name, be sure to change the 
+  reference to the class name in the createSearchBoxes() function */
+  width: 400px;
+  max-width: 100%;
+  margin: auto;
+  padding: 0 5px;
+  font-size: 13px;
+  position: relative;
+}
+
+.JCHS-chart__search-box--open-upward ul {
+  bottom: 20px;
+}
+
+.JCHS-chart__search-box__input {
+  width: 100%;
+  margin: 5px auto;
+  padding: 1px;
+  display: block;
+  position: relative;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAgMAAACf9p+rAAAACVBMVEUAAAAyMjIzMzMmhMtFAAAAAnRSTlMAgJsrThgAAABcSURBVHgBYhgxYBSMglGQtQoKVqJJSMEklqBJsAHam0MjAEAggGHHZozIyKgYOgDmaytinGcsYxdBBAkBCQEJAQkBQQRBBEEUQQRBBEEEQRRBBEEEQQRBTNP0vwu7s0JpRPs+OAAAAABJRU5ErkJggg==);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: right;
+  cursor: default;
+  border: 1px solid #777;
+}
+
+.JCHS-chart__search-box__list {
+  list-style-type: none;
+  max-height: 200px;
+  width: calc(100% - 7px);
+  padding: 0;
+  margin: 0;
+  display: none;
+  overflow: scroll;
+  overflow-x: hidden;
+  position: absolute;
+  z-index: 3;
+}
+
+@media (max-width: 350px) {
+  .JCHS-chart__search-box__list {
+    font-size: 11px;
+  }
+}
+
+.JCHS-chart__search-box__list li {
+  border: 1px solid #ddd;
+  margin-top: -1px;
+  background-color: #f6f6f6;
+  padding: 3px;
+  text-decoration: none;
+  color: black;
+  display: block;
+  cursor: pointer;
+}
+
+.JCHS-chart__search-box__list li:hover {
+  background-color: #eee;
+}
+
+/* old search box classes, for backward compatibility */
+.JCHS-search-box {
+  max-width: 400px;
+  margin: auto;
+  padding: 0 5px;
+  font-size: 13px;
+}
+
+.JCHS-search-input {
+  width: 100%;
+  margin: 5px auto;
+  padding: 1px;
+  display: block;
+  position: relative;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAgMAAACf9p+rAAAACVBMVEUAAAAyMjIzMzMmhMtFAAAAAnRSTlMAgJsrThgAAABcSURBVHgBYhgxYBSMglGQtQoKVqJJSMEklqBJsAHam0MjAEAggGHHZozIyKgYOgDmaytinGcsYxdBBAkBCQEJAQkBQQRBBEEUQQRBBEEEQRRBBEEEQQRBTNP0vwu7s0JpRPs+OAAAAABJRU5ErkJggg==);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: right;
+  cursor: default;
+  border: 1px solid #777;
+}
+
+.JCHS-search-list {
+  list-style-type: none;
+  max-height: 200px;
+  width: 405px;
+  padding: 0;
+  margin: 0;
+  display: none;
+  overflow: scroll;
+  overflow-x: hidden;
+  position: absolute;
+  z-index: 3;
+}
+
+.JCHS-search-list li {
+  border: 1px solid #ddd;
+  margin-top: -1px;
+  background-color: #f6f6f6;
+  padding: 3px;
+  text-decoration: none;
+  color: black;
+  display: block;
+  cursor: pointer;
+}
+
+.JCHS-search-list li:hover {
+  background-color: #eee;
+}
+
+/* Slider styles */
+.JCHS-chart__slider__wrapper {
+  width: 200px;
+  max-width: 100%;
+  margin: auto;
+}
+
+.JCHS-chart__slider__label {
+  text-align: center;
+  color: #666;
+  font-size: 18px;
+  margin: 5px auto 0 auto;
+}
+
+input[type=range].JCHS-chart__slider {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 5px 0;
+}
+input[type=range].JCHS-chart__slider:focus {
+  outline: none;
+}
+input[type=range].JCHS-chart__slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 15px;
+  cursor: pointer;
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  background: #e4dcd5;
+  border-radius: 1px;
+  border: 0px solid #000000;
+}
+input[type=range].JCHS-chart__slider::-webkit-slider-thumb {
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  border: 0px solid rgba(0, 30, 0, 0.57);
+  height: 25px;
+  width: 25px;
+  border-radius: 6px;
+  background: #4e7686;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -5px;
+}
+input[type=range].JCHS-chart__slider:focus::-webkit-slider-runnable-track {
+  background: #e6dfd8;
+}
+input[type=range].JCHS-chart__slider::-moz-range-track {
+  width: 100%;
+  height: 15px;
+  cursor: pointer;
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  background: #e4dcd5;
+  border-radius: 1px;
+  border: 0px solid #000000;
+}
+input[type=range].JCHS-chart__slider::-moz-range-thumb {
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  border: 0px solid rgba(0, 30, 0, 0.57);
+  height: 25px;
+  width: 25px;
+  border-radius: 6px;
+  background: #4e7686;
+  cursor: pointer;
+}
+input[type=range].JCHS-chart__slider::-ms-track {
+  width: 100%;
+  height: 15px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range].JCHS-chart__slider::-ms-fill-lower {
+  background: #e2d9d2;
+  border: 0px solid #000000;
+  border-radius: 2px;
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+}
+input[type=range].JCHS-chart__slider::-ms-fill-upper {
+  background: #e4dcd5;
+  border: 0px solid #000000;
+  border-radius: 2px;
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+}
+input[type=range].JCHS-chart__slider::-ms-thumb {
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  border: 0px solid rgba(0, 30, 0, 0.57);
+  height: 25px;
+  width: 25px;
+  border-radius: 6px;
+  background: #4e7686;
+  cursor: pointer;
+  height: 15px;
+}
+input[type=range].JCHS-chart__slider:focus::-ms-fill-lower {
+  background: #e4dcd5;
+}
+input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
+  background: #e6dfd8;
+}
+
+/* modal based on W3 example */
+.JCHS-chart__modal {
+    display: none; /* Hidden by default */
+    /*position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+
+  position: absolute; /* absolute in relation to parent that is position: relative (in this case .JCHS-chart-wrapper) */ 
+  
+  /* alternate method 
+  (also add vendor prefixes to support old versions)
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%); 
+  */
+}
+
+.JCHS-chart__modal__content {
+  background-color: #fefefe;
+  margin: 30px auto; /* 30% from the top and centered */
+  padding: 5px;
+  border: 1px solid #888;
+  width: 400px;  
+  max-width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.JCHS-chart__modal__close {
+  color: #aaa;
+  float: right;
+  clear: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.JCHS-chart__modal__close:hover,
+.JCHS-chart__modal__close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.JCHS-chart__drilldown {
+  min-height: 300px;
+  width: 380px;
+  max-width: calc(100% - 17px);
+  margin: 0;
+  display: block;
+  background: none;
+}
+
+.JCHS-chart__text-annotation {
+  font-size: 13px;
+}
+
+@media (max-width: 300px) {
+  .JCHS-chart__text-annotation {
+    font-size: 11px;
+  }
+}
+
+/* Highcharts CSS JCHS modifications */
+.highcharts-container {
+  font-family: "Open Sans", "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+}
+
+.highcharts-legend-item text {
+  font-weight: normal;
+}
+
+.highcharts-legend-box {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+.highcharts-tooltip-box {
+  color: #fff;
+  fill-opacity: 1;
+}
+
+.highcharts-label-box { stroke: #999; } /* tooltip box stroke */
+
+.highcharts-tooltip span { color: #333; } /* tooltip text color */
+
+.highcharts-label.highcharts-tooltip { filter: none; } /* removes drop shadow on text */
+
+.highcharts-axis-title {
+  white-space: nowrap;
+}
+
+.highcharts-credits {
+  cursor: default;
+  fill: #333;
+  font-size: 1em;
+}
+
+.highcharts-credits:hover {
+  fill: inherit;
+  font-size: inherit;
+}
+
+.highcharts-series:not(.highcharts-pie-series) .highcharts-point-select {
+  fill: #333;
+}
+
+.highcharts-mapline-series .highcharts-point {
+  color: #eee;
+  stroke: #333;
+  stroke-width: 1px;
+}
+
+.highcharts-button-symbol {
+  stroke-width: 1px;
+}
+
+.highcharts-button text {
+  fill: #666;
+}
+
+.highcharts-subtitle {
+  font-size: 14px; /* subtitle used for title on drilldown charts */
+  fill: #666;
+}
+
+.highcharts-title {
+  font-size: 18px;
+  fill: #C14D00;
+}
+
+.highcharts-plot-line {
+  fill: none;
+  stroke: #999;
+  stroke-width: 2px;
+}
+
+/* legend hover effect (highlight hovered series by graying out other series) doesn't work correctly on maps */
+.highcharts-legend-series-active g.highcharts-map-series:not(.highcharts-series-hover),
+.highcharts-legend-series-active g.highcharts-mapline-series:not(.highcharts-series-hover),
+.highcharts-legend-series-active g.highcharts-tilemap-series:not(.highcharts-series-hover), 
+.highcharts-legend-series-active g.highcharts-mapline-series:not(.highcharts-series-hover) {  
+  opacity: initial;
+}
