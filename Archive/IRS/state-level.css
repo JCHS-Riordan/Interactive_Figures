@@ -1,0 +1,157 @@
+#dashboard_wrapper {
+  max-width: 500;
+  margin: 20px auto;
+  font-family: "Open Sans", sans-serif;
+}
+
+#chart_title {
+  text-align: center;
+  font-weight: 400; 
+  color: #c14d00;
+  margin: 10px 0; 
+}
+
+#subtitle {
+  text-align: center;
+  font-weight: 400; 
+  color: #c14d00;
+  margin: 10px 0 0 0; 
+  font-size: 16px;
+}
+
+/* modal based on W3 example */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10px auto; /* 15% from the top and centered */
+  padding: 5px;
+  border: 1px solid #888;
+  width: 320px;  
+  max-width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+  clear: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#map_wrapper {
+  max-width: 500px;
+  height: 500px;
+  margin: auto;
+}
+
+#state_migration_map {
+  max-height: 400px; 
+  max-width: 500px; 
+  /*margin: 0px auto;*/
+  overflow: hidden;
+  margin: auto;
+}
+
+.drilldown.title {
+  height: 50px;
+  text-align: center;
+  background: none;
+}
+
+.drilldown {
+  height: 210px; /* Was 189px */
+  width: 300px;
+  max-width: 100%;
+  margin: 20px auto;
+  /*float: left;*/
+  /*clear: left;*/
+  margin: 0 0 0 0;
+  display: block;
+  background: none;
+}
+
+.age-form {
+  margin: auto;
+  width: 200px;
+  max-width: 100%;
+  display: block;
+}
+
+.select-age {
+  width: 100%;
+  margin: 10px auto 10px;
+  font-size:14px; 
+  display: inline-block;
+  height: 22px;
+  font-family: "Open Sans";
+}
+
+#table_notes {
+  font-size: .7rem;
+  color: #666;
+}
+
+.slider-wrapper {
+  width: 200px;
+  max-width: 100%;
+  margin: auto;
+}
+/*~~~~~~~~~~~~~ Year Slider ~~~~~~~~~~~~~~~~*/
+#year_slider {
+  margin: 5px 0 5px 0;
+  padding: 0;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 3px;
+  background: #E4DCD5;
+  outline: none;
+  display: inline;
+}
+
+#year_slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  border-radius: 20%;
+  background: #4E7686; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+
+#year_slider::-moz-range-thumb {
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  border-radius: 20%;
+  background: #4E7686; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+#year_label {
+  text-align: center;
+  color: rgba(100,100,100,0.9);
+  font-size: 1.10rem;
+  margin: 5px auto 0 auto;
+}
