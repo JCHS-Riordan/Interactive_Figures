@@ -1,0 +1,158 @@
+@import url('https://code.highcharts.com/6.1.4/css/highcharts.css');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400');
+@import url('https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/css/JCHS-highcharts.css');
+
+#container {
+  /*max-width: 100%;*/
+  height: 400px;
+  display: inline-block;
+  /*transition: width 3s;*/
+  /*border: 3px solid #333;*/
+
+}
+
+.map--regular {
+  max-width: 100%;
+}
+
+.map--small {
+  width: 550px;
+  max-width: calc(100% - 200px);
+}
+
+#infobox {
+  width: 240px;
+  font-size: 12px;
+  position: absolute;
+  top: 200px;
+  right: 0;
+  /*border: 3px solid #73AD21;*/
+}
+
+.JCHS-chart__infobox__title {
+  font-size: 20px;
+}
+
+/* change chart colors here */
+.highcharts-color-0 { fill: #ababab; stroke: #467b91; color: #467b91; }
+.highcharts-color-1 { fill: #e3c031; stroke: #666; color: #c8ded6; }
+.highcharts-color-2 { fill: #f6e599; stroke: #f6e599; color: #f6e599; }
+.highcharts-color-3 { fill: #c14d00; stroke: #c14d00; color: #c14d00; }
+/*.highcharts-color-4 { fill: #eab700; stroke: #eab700; color: #eab700; }*/
+/*.highcharts-color-5 { fill: #c14d00; stroke: #c14d00; color: #c14d00; }*/
+
+
+/* Drilldown CSS */
+.highcharts-area.zone-0, 
+.highcharts-point.zone-0  { stroke: #467b91; fill: #467b91; }
+.highcharts-graph.zone-0 { stroke: #467b91; }
+.highcharts-area.zone-1, 
+.highcharts-point.zone-1  { stroke: #c8ded6; fill: #c8ded6; }
+.highcharts-graph.zone-1 { stroke: #c8ded6; }
+.highcharts-area.zone-2, 
+.highcharts-point.zone-2  { stroke: #f6e599; fill: #f6e599; }
+.highcharts-graph.zone-2 { stroke: #f6e599; }
+.highcharts-area.zone-3, 
+.highcharts-point.zone-3  { stroke: #c14d00; fill: #c14d00; }
+.highcharts-graph.zone-3 { stroke: #c14d00; }
+
+.JCHS-chart__tooltip__z-value {
+  font-size: 20px;
+  font-weight: bold;
+  padding: 4px 0;
+}
+
+.JCHS-chart__tooltip__more-info {
+  font-size: 11px;
+  font-style: italic;
+  padding-top: 4px;
+  text-align: right;
+}
+
+.highcharts-data-label text {
+  font-size: 10px;
+  fill: #222;
+}
+
+.highcharts-color-1 { cursor: pointer; }
+
+
+/* bounce animation based on Stack Overflow example :
+https://stackoverflow.com/questions/32306089/css-smooth-bounce-animation */
+
+.animated {
+  -webkit-animation-duration: 5s;
+          animation-duration: 5s;
+  -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+  -webkit-animation-iteration-count: 1;
+          animation-iteration-count: 1;
+}
+
+@-webkit-keyframes bounce {
+  0%, 100% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+  50% {
+    -webkit-transform: translateY(-3px);
+            transform: translateY(-3px);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+  50% {
+    -webkit-transform: translateY(-3px);
+            transform: translateY(-3px);
+  }
+}
+
+.bounce {
+  -webkit-animation-name: bounce;
+          animation-name: bounce;
+}
+
+@-webkit-keyframes fadeInOut {
+  0%, 30%, 100% {
+    opacity: 0;
+  }
+  50%, 80% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 30%, 100% {
+    opacity: 0;
+  }
+  50%, 80% {
+    opacity: 1;
+  }
+}
+
+.fadeInOut {
+  -webkit-animation-name: fadeInOut;
+          animation-name: fadeInOut;
+}
+
+#instructions {
+  width: 100px;
+  position: absolute;
+  top: 100px;
+  right: 30px;
+  color: #c9a718;
+  font-weight: bold;
+  font-size: 13px;
+  /*border: 1px solid #999;
+  border-radius: 8%;
+  padding: 3px;*/
+  
+}
+
+.highcharts-data-label text { font-weight: normal; }

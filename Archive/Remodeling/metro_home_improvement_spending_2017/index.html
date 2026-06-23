@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Highcharts - Map - Remodeling Spending, updated drilldown function</title>
+
+
+
+      <link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+<body>
+
+
+
+<div id="chart_wrapper" class="JCHS-chart__wrapper">
+  <h3 id="chart_title" class="JCHS-chart__title"></h3>
+  <div id="drilldown_modal" class="JCHS-chart__modal">
+    <div class="JCHS-chart__modal__content">
+      <span class="JCHS-chart__modal__close">&times;</span>
+      <div id="drilldown_chart" class="JCHS-chart__drilldown"></div>
+    </div>
+  </div>
+  <div id="container" class="JCHS-chart__container map--regular"></div>
+  <div id="infobox" class="JCHS-chart__infobox">
+    <div id="instructions" class="">← Click a metro &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for more info</div>
+  </div>
+  <!--<div id="search_box" class="JCHS-chart__search-box JCHS-chart__search-box--open-upward"></div>-->
+  <div id="table_notes" class="JCHS-chart__table-notes"></div>
+  <h4 id="chart_title" class="JCHS-chart__title">Back to <a href="https://www.jchs.harvard.edu/research-areas/reports/improving-americas-housing-2019">Improving America's Housing 2019</a></h4>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/6.2.0/js/highcharts.js"></script>
+<script src="https://code.highcharts.com/maps/6.2.0/js/modules/map.js"></script>
+<script src="https://code.highcharts.com/6.2.0/js/modules/exporting.js"></script>
+
+<script src="https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/js/JCHS-highcharts.js"></script>
+
+
+<script src="https://code.highcharts.com/mapdata/countries/us/us-all.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/proj4@2.5.0/dist/proj4-src.min.js"></script>
+
+
+
+    <script src="js/index.js"></script>
+
+
+
+
+</body>
+
+</html>

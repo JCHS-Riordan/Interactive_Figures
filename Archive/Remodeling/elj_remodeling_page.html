@@ -1,0 +1,528 @@
+<style>
+#map_wrapper {
+  width: 1150px;
+  height: 500px;
+  margin: auto;
+  font-family: "Open Sans", sans-serif;
+}
+
+#container {
+  height: 480px;
+  width: 640px;
+  margin: 0px 0px 0px 0px;
+  float: left;
+}
+
+#drilldown_chart {
+  height: 190px;
+  width: 480px;
+  margin: 150px auto auto 0px;
+  float: right;
+  clear: right;
+  display: block;
+}
+
+#table_notes {
+  font-size: .7rem;
+  color: #666;
+  text-align: center;
+}
+
+.tooltip_chart {
+  height: 120px;
+  width: 300px;
+  margin: auto;
+  padding: 0px;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+table {
+  margin: 10px auto;
+}
+
+.map-instructions {
+  margin: 0px 75px 0px 75px;
+  color: #C14D00;
+  font-size: 17px;
+  text-align: left;
+}
+</style>
+
+<p class="MsoNormal">by Elizabeth La Jeunesse</p>
+
+<p class="MsoNormal">This August, the Remodeling Futures Program will publish a research note detailing our new projections for home improvement spending in 50 major metropolitan areas and the methodology and data we used to develop these forecasts. This marks the culmination of over a year of research into what drives homeowner remodeling activity at the local level.</p>
+
+<p class="MsoNormal">A “sneak preview” of the 2018 projections for 50 major metropolitan areas is displayed in the interactive map below. Click individual metros to get more information about recent historical trends and the 2018 projections for that area.</p>
+
+<div id="map_wrapper">
+<div id="container"></div>
+
+<div id="drilldown_chart">
+      <h4 class="map-instructions">Click on any metropolitan area<br> to view historical trends and projections</h4>
+</div>
+</div>
+
+<p class="MsoNormal">As the map shows, in 2018, aggregate annual expenditures on improvements to owner-occupied homes are expected to grow by 10 percent or more in 11 metros led by Kansas City, Charlotte, San Antonio, Dallas, and Sacramento. In total, expenditures are expected to grow by at least 5 percent in 41 metros and spending is not expected to decline in any of the 50 metros this year. Overall, these projections mirror our latest national remodeling projection of more than 7 percent growth in 2018 from the Leading Indicator of Remodeling Activity (<a href="http://www.jchs.harvard.edu/press-releases/robust-outlook-residential-remodeling-through-mid-year-2019">LIRA</a>), and also suggest how growth trends are expected to play out geographically across the nation.</p>
+
+<p class="MsoNormal">The projected strong growth in home improvement spending in many metros this year reflects a number of factors that are captured in our estimation model, including ongoing gains in home prices, home sales activity, housing starts, retail sales of building materials, and remodeling permitting activity. Our research suggests that these inputs typically correlate well with historical home improvement spending, both nationally and at the metro-level, and also tend to lead remodeling activity by several quarters.</p>
+
+<p class="MsoNormal">The interactive map provides projections for annual gains in metro-area home improvement spending through the end of 2018, but also shows how the modeled growth rates have been trending over the past several quarters in each metro. For example, in several metros where especially strong growth is projected by year-end–such as Kansas City, San Antonio, Tucson, Pittsburgh, and Austin–annual growth rates have been rapidly accelerating in recent quarters. In contrast, growth in spending is expected to moderate from previously higher rates of gain, but still remain positive, in such metros as San Diego, Las Vegas, and Portland.</p>
+
+<p class="MsoNormal">Going forward, we will routinely monitor and assess the model’s performance for any adjustments that might improve our metro-level projections over time. We plan to release 2019 projections for metro area growth in home improvement spending early next year.<span style="mso-spacerun: yes;">&nbsp;
+
+</span></p>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/maps/highmaps.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+<script src="https://s3.amazonaws.com/jchs-geojson-test/cbsa_2016_simplified_precision1_js.js"></script>
+<script src="https://s3.amazonaws.com/jchs-geojson-test/states_2016_simplified_precision1_js.js"></script>
+
+<script>
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~ https://api.highcharts.com/highmaps/ ~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+cbsas = Highcharts.geojson(Highcharts.maps['countries/us/cbsa'])
+states = Highcharts.geojson(Highcharts.maps['countries/us/states'])
+//logoURL = 'http://www.jchs.harvard.edu/sites/jchs.harvard.edu/files/harvard_jchs_logo_2017.png'
+
+//var table_notes = "Notes: Projections methodology is outlined in forthcoming JCHS research note, “Projecting Home Improvement Spending at the Metropolitan Area Level.” <br/>Source: Joint Center tabulations of Moody’s Analytics, US Census Bureau, CoreLogic, National Association of Realtors, and Buildfax data."
+
+$(document).ready(function() {
+  //Google Sheet API request
+  SheetID = '1L-4rEpVYM0roI2gk6uRbcrI4-fMeTgJLHdkEdohIc68'
+  range = 'Sheet1!C:Q'
+  baseURL = 'https://sheets.googleapis.com/v4/spreadsheets/'
+  API_Key = 'AIzaSyDY_gHLV0A7liVYq64RxH7f7IYUKF15sOQ'
+  API_params = 'valueRenderOption=UNFORMATTED_VALUE'
+  requestURL = baseURL + SheetID + '/values/' + range + '?key=' + API_Key + '&' + API_params
+
+
+$.get(requestURL, function(obj) {
+    console.log(requestURL)
+    ref_data = obj.values
+    categories = ref_data[0]
+    console.log(ref_data[0].slice(2,11))
+    data = obj.values.map(function (x) {
+      //x.splice(1,1)
+      return [x[0],x[9]]
+    })
+    //data = obj.values
+    column_name = data[0][1]
+    $('.year_label').html(column_name)
+
+    //$('#table_notes').html(table_notes)
+
+    console.log(ref_data)
+    Highcharts.setOptions({
+      lang: {
+        thousandsSep: ",",
+        contextButtonTitle: 'Export Chart',
+        downloadPDF: 'Download as PDF',
+        downloadCSV: 'Download chart data (CSV)',
+        downloadXLS: 'Download chart data (Excel)'
+      }
+    })
+
+    // Create the chart
+    map = Highcharts.mapChart('container', {
+      chart: {
+        //height: 600,
+        //width: 800,
+        margin: [50, 30, 75, 10],
+        borderWidth: 0,
+        /*events: {
+          load: function(event) {
+            this.renderer.image(logoURL,0,this.chartHeight-80,289,85).add() // (src,x,y,width,height)
+          },
+        },*/
+      },
+
+      credits: {
+        enabled: false
+      },
+
+      subtitle: {
+        //use subtitle element for our table notes
+        text: "Notes: Projections methodology is outlined in forthcoming JCHS research note, “Projecting Home Improvement Spending at the Metropolitan Area Level.” <br/>Source: Joint Center tabulations of Moody’s Analytics, US Census Bureau, CoreLogic, National Association of Realtors, and Buildfax data.",
+        widthAdjust: -250,
+        align: 'left',
+        x: 175,
+        y: -40,
+        verticalAlign: 'bottom',
+        style: {
+          color: '#999999',
+          fontSize: '9px'
+        }
+      },
+      title: {
+        text: 'Annual Growth in Home Improvement Spending<br/><span style="font-size: 15px;">' + column_name + '</span>',
+        x: -20,
+        y: 20,
+        style: {
+          color: '#C14D00',
+          fontWeight: 600,
+          fontSize: '16px'
+        }
+      },
+
+      legend: {
+        title: {
+          text: 'Projected Change<br />(percent)'
+        },
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle',
+        y: 95,
+        x: 10,
+        //symbolHeight: 140,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        //reversed: true,
+        labelFormatter: function () {
+          if (!this.from & this.from != 0) {
+            return 'Negative'
+            //return 'Less than ' + this.to
+          } else if (!this.to & this.to != 0) {
+            return this.from + ' or more'
+          } else {
+            return this.from + ' to ' + (this.to-1)
+          }
+          //return this.from  + ' to ' + this.to ;
+        }
+      },
+
+      mapNavigation: {
+        enabled: true
+      },
+
+      colorAxis: {
+        //type: 'linear',
+        dataClasses: [
+          //{
+            //to: -5,
+            //color: '#C14D00'
+          //},
+          {
+            //from: -1,
+            to: 0,
+            color: '#F5C35C'
+          }, {
+            from: 0,
+            to: 5,
+            color: '#E4DCD5'
+          }, {
+            from: 5,
+            to: 10,
+            color: '#ababc3'//'#ABBFC3'
+          }, {
+            from: 10,
+            color: '#4e4e86'//'#4E7686'
+          }
+
+        ],
+        /*stops: [
+          [0.2, '#C14D00'],
+          [0.33, '#E4DCD5'],
+          [0.5, '#6BA2B8']
+        ],*/
+        //min: -19,
+        //max: 29,
+        //minColor: '#F7F2DC',
+        //maxColor: '#2A84A8',
+        //startOnTick: false,
+        //endOnTick: false,
+
+      },
+
+      //colors: ['#C14D00', '#E4DCD5', '#6BA2B8'],
+
+      series: [
+        {
+          type: 'map',
+          name: column_name,
+          mapData: cbsas,
+          allAreas: false,
+          data: data,
+          joinBy: ['GEOID', 0],
+          keys: ['GEOID', 'value'],
+          point: {
+            events: {
+              click: function (event) {
+                console.log('clicked on map: ' + event.point.name)
+                console.dir(event.point)
+                getMetroInfo(event.point.GEOID, event.point.name)
+              }
+            }
+          }
+        }, {
+          type: 'mapline',
+          name: 'State borders',
+          data: states,
+          color: '#333',
+          lineWidth: 1,
+          enableMouseTracking: false
+        }
+      ],
+
+        tooltip: {
+          enabled: true,
+          useHTML: true,
+          padding: 1,
+          backgroundColor: 'rgba(247,247,247,1)',
+          valueSuffix: '%',
+          /*formatter: function() {
+            var GEOID = this.point.GEOID
+            var metro_name = this.point.name
+            setTimeout( function() {
+              chart_data = []
+              tooltip_table = '<table><tr><th>Year/Quarter</th><th>Value</th></tr>'
+              $.each(ref_data, function (idx, el) {
+                if (el[0] == GEOID) {
+                  console.log(el[0])
+                  for (i = 1; i<10; i++) {
+                    chart_data.push(el[i])
+                    tooltip_table = tooltip_table + '<tr><td>'+ categories[i] +'</td><td>' + el[i] + '</td></tr>'
+                  }
+                }
+              } )
+              tooltip_table = tooltip_table + '</table>'
+              console.log(chart_data)
+              $("#hc-tooltip").highcharts({
+                chart: {
+                  spacingTop: 5,
+                  marginTop: 20,
+                  spacingBottom: 5
+                  //backgroundColor: 'rgba(255,255,255,0.95)',
+                },
+                title: {
+                  text: metro_name,
+                  style: {
+                    fontSize: '12px'
+                  }
+                },
+                credits: {
+                  enabled: false
+                },
+                legend: {
+                  enabled: false
+                },
+                exporting: {
+                  enabled: false
+                },
+                yAxis: {
+                  labels: {
+                    format: '{value}%'
+                  },
+                  title: {
+                    text: null
+                  }
+                },
+                tooltip: {
+                  pointFormat: '<b>{point.y}</b>',
+                  valueSuffix: '%'
+                },
+                xAxis: {
+                  //categories: categories.slice(2,10),
+                  categories: [categories[1], '', '', '', '', '', '', categories[9]],
+                  labels: {
+                    autoRotation: 0,
+                    overflow: false
+                  },
+                  tickInterval: 7,
+                  tickLength: 0
+                },
+                series: [{
+                  name: 'LIRA',
+                  data: chart_data,
+                  color: '#4E7686',
+                  //animation: false,
+                  zones: [
+                    {
+                      value: -5,
+                      color: '#C14D00'
+                    }, {
+                      value: 0,
+                      color: '#F5C35C'
+                    }, {
+                      value: 5,
+                      color: '#E4DCD5'
+                    }, {
+                      value: 10,
+                      color: '#ababc3' //'#ABBFC3'
+                    }, {
+                      color: '#4e4e86' //'#4E7686'
+                    }
+                  ],
+                }]
+              });
+            }, 100)
+            console.log(this)
+            return '<div id="hc-tooltip" class="tooltip_chart"></div>' //+ tooltip_table;
+          }*/
+        },
+
+      /*~~~~~~Exporting options~~~~~~*/
+      exporting: {
+        enabled: true,
+        filename: "Annual Growth in Home Improvement Spending",
+        buttons: {
+          contextButton: {
+            text: 'Export',
+            menuItems: [
+              'printChart',
+              'downloadPDF',
+              'separator',
+              'downloadPNG',
+              'downloadJPEG',
+              //'separator',
+              //'downloadFullData'
+            ],
+            y: 3,
+            theme: {
+              fill: '#ffffff00'
+            },
+          },
+        },
+        chartOptions: {
+          title: {
+            text: 'Annual Growth in Home Improvement Spending <br/>' + column_name,
+            x: 15
+          },
+          subtitle: {
+            //use subtitle element for our table notes
+            text: "Notes: Projections methodology is outlined in forthcoming JCHS research note, “Projecting Home Improvement Spending at the Metropolitan Area Level.” <br/>Source: Joint Center tabulations of Moody’s Analytics, US Census Bureau, CoreLogic, National Association of Realtors, and Buildfax data.",
+            widthAdjust: -225,
+            align: 'left',
+            x: 115,
+            y: -40,
+            verticalAlign: 'bottom',
+            style: {
+              color: '#999999',
+              fontSize: '9px'
+            }
+          },
+        },
+      }
+    })
+    console.log(data)
+
+
+  })
+
+}) //end
+
+/* Year slider functionality commented out b/c we removed it for now -RF 7/30/18
+//for cross-browser compatibility on slider drag
+$("#year_slider").on('input', function () {
+  $(this).trigger('change');
+});
+
+$('#year_slider').on('change', function () {
+  var time_period = this.value
+  new_data = ref_data.map(function (x) {
+    return [x[0],x[time_period]]
+  })
+  column_name = new_data[0][1]
+  $('#year_label').html(column_name)
+  map.series[0].setData(new_data)
+  map.title.update({text: 'Home Improvement Spending<br/><span style="font-size: 15px;">' + column_name + '</span>' })
+
+})
+
+$('#year_slider').mousedown(function () {
+  $('#year_label').removeClass('hidden')
+});
+
+$('#year_slider').mouseup(function () {
+  $('#year_label').addClass('hidden')
+});
+*/
+
+function getMetroInfo(GEOID, metro_name) {
+  console.log(GEOID)
+  chart_data = []
+  $.each(ref_data, function (idx, el) {
+    if (el[0] == GEOID) {
+      console.log(el[0])
+      for (i = 1; i<10; i++) {
+        chart_data.push(el[i])
+      }
+    }
+  } )
+  console.log(chart_data)
+  var chart = Highcharts.chart("drilldown_chart", {
+    chart: {
+      spacingTop: 1,
+      marginTop: 30
+    },
+
+    title: {
+      text: metro_name,
+      style: {
+        fontSize: '15px'
+      }
+    },
+
+    credits: {
+      enabled: false
+    },
+
+    legend: {
+      enabled: false
+    },
+
+    exporting: {
+      enabled: false
+    },
+
+    yAxis: {
+      labels: {
+        format: '{value}%'
+      },
+
+      title: {
+        text: null
+      }
+    },
+
+    tooltip: {
+      pointFormat: '<b>{point.y}</b>',
+      valueSuffix: '%'
+    },
+
+    xAxis: {
+      categories: categories.slice(1,10)
+    },
+
+    series: [{
+      name: 'LIRA',
+      data: chart_data,
+      color: '#4E7686',
+      zones: [
+        {
+          value: -5,
+          color: '#C14D00'
+        }, {
+          value: 0,
+          color: '#F5C35C'
+        }, {
+          value: 5,
+          color: '#E4DCD5'
+        }, {
+          value: 10,
+          color: '#ababc3' //'#ABBFC3'
+        }, {
+          color: '#4e4e86' //'#4E7686'
+        }
+      ],
+    }]
+  });
+
+} //end getMetroInfo()
+</script>
