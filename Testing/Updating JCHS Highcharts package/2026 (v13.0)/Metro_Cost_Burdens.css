@@ -1,0 +1,16 @@
+@import url('https://code.highcharts.com/6.1.4/css/highcharts.css');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400');
+@import url('https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/css/JCHS-highcharts.css');
+
+.highcharts-color-0 { fill: #304751; stroke: #304751; color: #304751; }
+.highcharts-color-1 { fill: #507688; stroke: #507688; color: #507688; }
+.highcharts-color-2 { fill: #93bacb; stroke: #93bacb; color: #93bacb; }
+.highcharts-color-3 { fill: #fccfae; stroke: #fccfae; color: #fccfae; }
+.highcharts-color-4 { fill: #f89f5c; stroke: #f89f5c; color: #f89f5c; }
+.highcharts-color-5 { fill: #bf4f27; stroke: #bf4f27; color: #bf4f27; }
+
+#options_table  {
+  vertical-align: middle;
+  margin: 2px 80px;
+  font-size: 13px;
+}
