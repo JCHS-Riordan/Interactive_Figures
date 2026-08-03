@@ -70,7 +70,8 @@
   H.setOptions(H.JCHS.mapOptions)
 
   // Fire drilldownFunction when user clicks on map
-  H.Chart.prototype.callbacks.push(function (chart) {
+  H.addEvent(H.Chart, 'load', function () {
+    var chart = this;
     if (chart.options.chart.type === "map") {
       if (chart.options.JCHS.drilldownFunction) {
         chart.update({
@@ -81,17 +82,18 @@
                   click: function () {
 
                     //JCHS shapefiles call it GEOID, Highcharts shapefiles (e.g., counties) call it fips
-                    var GEOID = H.pick(event.point.GEOID, event.point.fips)
+                    //`this` is the clicked Point (not the deprecated global `event`)
+                    var GEOID = H.pick(this.GEOID, this.fips)
 
-                    chart.options.JCHS.drilldownFunction(event.point.name, GEOID, event.point)
+                    chart.options.JCHS.drilldownFunction(this.name, GEOID, this)
                   }
                 } //end events
-              } //end point 
+              } //end point
             } //end series
           } //end plotOptions
         }) //end chart.update
       } //end if
     } //end if
-  }) //end callbacks.push
+  }) //end addEvent 'load'
 
 }(Highcharts))
