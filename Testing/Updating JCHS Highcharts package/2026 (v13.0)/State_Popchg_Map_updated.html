@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>State Population Change Map (Highcharts 13 / updated JCHS package)</title>
+<link rel="stylesheet" href="State_Popchg_Map_updated.css">
+</head>
+<body>
+
+<div id="chart_wrapper" class="JCHS-chart__wrapper">
+  <div id="form_wrapper" class="JCHS-chart__user-input">
+    <form id="user_input">
+<table id="options_table">
+  <tr>
+    <td><label><input type="radio" name="demog_type" value="2" checked> Population Change</input></label></td>
+    <td><label><input type="radio" name="demog_type" value="3"> Domestic Migration</input></label></td>
+      <td><label><input type="radio" name="demog_type" value="4"> Immigration</input></label</td>
+      <td><label><input type="radio" name="demog_type" value="5"> Natural Change</input></label</td>
+      </tr>
+</table>
+    </form>
+  </div>
+<div id="container" class="JCHS-chart__container"></div>
+  <div id="drilldown_chart" class="JCHS-chart__drilldown"></div>
+<div id="table_notes" class="JCHS-chart__table-notes"></div>
+</div>
+
+<!-- Copy of Reports/SON/2026/State_Popchg_Map.html, replicated to test the updated
+     JCHS_Code_Package against a current Highcharts release (13.0.0 as of 2026-06-11)
+     instead of the production-pinned 6.2.0. Only the library/package script sources
+     below differ from the original; State_Popchg_Map_updated.js is byte-for-byte the
+     same chart logic as State_Popchg_Map.js. -->
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/13.0.0/highcharts.js"></script>
+<script src="https://code.highcharts.com/13.0.0/modules/map.js"></script>
+<script src="https://code.highcharts.com/13.0.0/modules/exporting.js"></script>
+
+<script src="../../../JCHS_Code_Package/JCHS-highcharts.js"></script>
+<script src="../../../JCHS_Code_Package/JCHS-highcharts--map.js"></script>
+
+<script src="https://harvard-jchs.s3.amazonaws.com/interactive-tools/geojson/us_states_simplified_highcharts.geojson"></script>
+<script src="State_Popchg_Map_updated.js"></script>
+</body>
+</html>
