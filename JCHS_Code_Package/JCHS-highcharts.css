@@ -407,12 +407,35 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
 }
 
 /* Highcharts CSS JCHS modifications */
-.highcharts-container {
-  font-family: "Open Sans", "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+/* Highcharts 13 sets font-family inline on the root <svg class="highcharts-root">
+   itself (not just individual text elements), which every SVG text element then
+   inherits from — beating this rule on the outer <div class="highcharts-container">
+   even with !important, since the <svg> has its own directly-declared value.
+   Targeting .highcharts-root directly (also !important, to beat its own inline
+   style) is what actually restores our font down through the chart. */
+.highcharts-container,
+.highcharts-root {
+  font-family: "Open Sans", "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 }
 
 .highcharts-legend-item text {
   font-weight: normal;
+}
+
+/* Highcharts 13 sets font-size (0.8em) and fill (a theme gray) inline on axis
+   label <text> elements, and font-size + font-weight: bold inline on the
+   legend title <text> — both always beat a plain class rule regardless of
+   specificity. Values below restore the sizes/weights/colors this package
+   has always rendered at (Highcharts 6's own un-overridden defaults). */
+.highcharts-axis-labels text {
+  font-size: 10.8px !important;
+  fill: #666 !important;
+}
+
+.highcharts-legend-title text {
+  font-size: 12px !important;
+  font-weight: normal !important;
+  fill: #000 !important;
 }
 
 .highcharts-legend-box {
