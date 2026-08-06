@@ -1,6 +1,6 @@
-@import url('https://code.highcharts.com/6.1.4/css/highcharts.css');
+@import url('https://code.highcharts.com/13.0.0/css/highcharts.css');
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400');
-@import url('https://s3.amazonaws.com/jchs-app-source-data/JCHS-highchartrs/src/css/JCHS-highcharts.css');
+@import url('https://harvard-jchs.s3.us-east-1.amazonaws.com/jchs-highcharts/Highcharts_v13/JCHS-highcharts.css');
 
 .highcharts-color-0 { fill: #304751; stroke: #304751; color: #304751; }
 .highcharts-color-1 { fill: #507688; stroke: #507688; color: #507688; }
