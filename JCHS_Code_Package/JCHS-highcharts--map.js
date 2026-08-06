@@ -36,7 +36,7 @@
         } else if (!this.hasOwnProperty('to')) {
           return this.from + ' or Over'
         } else {
-          return this.from + ' â€“ ' + this.to
+          return this.from + ' – ' + this.to
         }
       }
     }, //end legend

@@ -511,20 +511,24 @@
   /**
    * @function #numFormat
    * @memberof JCHS
-   * 
+   *
    * @description Format a number and return a string. Based on Highcharts.numberFormat().
    *
    * @param {Number} number - The input number to format.
    * @param {Number} [decimals] - The number of decimal places. A value of -1 preserves
-   *        the amount in the input number. Defaults to -1.
+   *        the amount in the input number. If omitted, decimals are capped at 2 (but a
+   *        number with fewer native decimals, e.g. a whole-number count, still prints
+   *        with no trailing zeros) — matching JCHS.numFormat's long-standing default.
    *
    * @returns {String} The formatted number.
-  
+
    */
 
-  JCHS.numFormat = function (number) {
-    var decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : -1;
-
+  JCHS.numFormat = function (number, decimals) {
+    if (decimals === undefined) {
+      var origDec = ((+number || 0).toString().split('.')[1] || '').length;
+      decimals = Math.min(origDec, 2);
+    }
 
     return H.numberFormat(number, decimals, '.', ',');
   }; //end numFormat
@@ -568,5 +572,19 @@
   //draw y-axis titles in JCHS style on every chart render
   H.addEvent(H.Chart, 'render', function () {
     H.JCHS.yAxisTitle(this, this.options.JCHS.yAxisTitle, this.options.JCHS.yAxisTitle2);
+  });
+
+  //initialize modal popup behavior for map drilldown
+  var modal = $('.JCHS-chart__modal');
+
+  //hide the modal when the background is clicked
+  modal.click(function () {
+    modal.css('display', 'none');
+  }).children().click(function (e) {
+    e.stopPropagation();
+  });
+
+  $('.JCHS-chart__modal__close').click(function () {
+    modal.css('display', 'none');
   });
 })(Highcharts);
