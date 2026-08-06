@@ -5,6 +5,19 @@
 .highcharts-color-3 { fill: #998b7d; stroke: #998b7d; }
 .highcharts-color-4 { fill: #c1b9b1; stroke: #c1b9b1; }
 
+/* Highcharts 13 puts the highcharts-color-N class on the legend item's
+   wrapping <g>, not on the swatch itself, and colors the swatch via a
+   fill="var(--highcharts-color-N)" presentation attribute referencing
+   Highcharts' own default palette. Since fill is inheritable and the
+   wrapping <g> already resolves to our custom color above, inherit it
+   down to the swatch (a presentation attribute loses to any matching
+   author rule, so this is enough — no !important needed). */
+.highcharts-legend-item .highcharts-point,
+.highcharts-legend-item .highcharts-graph {
+  fill: inherit;
+  stroke: inherit;
+}
+
 /* change chart zone colors here */
 .highcharts-area.zone-0, 
 .highcharts-point.zone-0  { stroke: #467b91; fill: #467b91; }
@@ -450,14 +463,18 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
   fill: #666;
 }
 
+/* Highcharts 13 writes font-size and fill for these directly as an inline
+   style attribute on the <text> element (e.g. style="font-size: 0.8em;
+   fill: var(--highcharts-neutral-color-60)"), which otherwise always beats
+   a plain class rule regardless of specificity or source order. */
 .highcharts-subtitle {
-  font-size: 14px; /* subtitle used for title on drilldown charts */
-  fill: #666;
+  font-size: 14px !important; /* subtitle used for title on drilldown charts */
+  fill: #666 !important;
 }
 
 .highcharts-title {
-  font-size: 18px;
-  fill: #C14D00;
+  font-size: 18px !important;
+  fill: #C14D00 !important;
 }
 
 .highcharts-plot-line {
