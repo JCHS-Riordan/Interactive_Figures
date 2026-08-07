@@ -73,6 +73,14 @@
   H.addEvent(H.Chart, 'load', function () {
     var chart = this;
     if (chart.options.chart.type === "map") {
+
+      //map charts draw an Alaska/Hawaii inset in the same bottom-left corner where the
+      //export logo is normally placed (see JCHS-highcharts.js), which paints over it -
+      //move it to the bottom-right for maps specifically, where there's no map content
+      if (chart.jchsLogo) {
+        chart.jchsLogo.attr({ x: chart.chartWidth - 170 })
+      }
+
       if (chart.options.JCHS.drilldownFunction) {
         chart.update({
           plotOptions: {

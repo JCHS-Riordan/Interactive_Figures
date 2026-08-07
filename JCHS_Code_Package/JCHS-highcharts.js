@@ -501,7 +501,12 @@
     var text = H.pick(user_input_note, chart_options_note, '');
 
     //draw text
-    var rendered_text = chart.renderer.text(text).css({ width: '420px' }).addClass('JCHS-chart__table-notes--exporting').align({ align: 'right', verticalAlign: 'bottom', x: -10, y: 8 }).add();
+    //font-size/color set inline (not just via the JCHS-chart__table-notes--exporting class) because this
+    //element only ever exists on the export-only chart clone, and Highcharts' export SVG generation can't
+    //read this package's CSS (loaded cross-origin) to bake its rules in, unlike elements already on the
+    //live chart. Without this, the text falls back to the export SVG's default size (~16px) instead of
+    //7.5px, throws off the getBBox()-based positioning below, and can spill into the logo's corner.
+    var rendered_text = chart.renderer.text(text).css({ width: '420px', fontSize: '7.5px', color: '#666' }).addClass('JCHS-chart__table-notes--exporting').align({ align: 'right', verticalAlign: 'bottom', x: -10, y: 8 }).add();
 
     //align to lower right corner
     var box = rendered_text.getBBox();
@@ -548,7 +553,14 @@
 
     if (chart.renderer.forExport) {
 
-      chart.renderer.image(JCHS.logoURL, 0, chart.chartHeight - 50, 170, 55).add();
+      //map charts draw an Alaska/Hawaii inset in the same bottom-left corner the logo
+      //normally uses, which paints over it - place it bottom-right for maps instead.
+      //(This has to be decided right here rather than in a second addEvent(H.Chart,'load',...)
+      //listener in JCHS-highcharts--map.js: only the first-registered 'load' listener between
+      //the two files actually runs for the export-clone chart, confirmed by testing - a second
+      //one silently never fires for it, even though it fires normally for the on-screen chart.)
+      var logoX = chart.options.chart.type === "map" ? chart.chartWidth - 170 : 0;
+      chart.renderer.image(JCHS.logoURL, logoX, chart.chartHeight - 50, 170, 55).add();
 
       H.JCHS.addTableNotes(chart);
     }

@@ -438,6 +438,15 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
   fill: #000 !important;
 }
 
+/* Highcharts 13 renders export-menu dividers as a 0.5px inline-styled background
+   bar instead of production's actual <hr> (browser default: 1px inset gray),
+   making them nearly invisible. Force a visible line to match. */
+.highcharts-menu-item.highcharts-separator {
+  height: 1px !important;
+  background-color: #999 !important;
+  margin: 8px 0 !important;
+}
+
 .highcharts-legend-box {
   fill: rgba(255, 255, 255, 0.9);
 }
