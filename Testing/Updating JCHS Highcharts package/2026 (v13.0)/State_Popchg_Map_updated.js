@@ -211,9 +211,10 @@ function drilldownChart(state_name, GEOID) {
     yAxis: {
       labels: {
         formatter: function() {
-          return H.JCHS.numFormat(this.value) 
+          return H.JCHS.numFormat(this.value)
         }
-      }
+      },
+      tickAmount: 3
     },
     chart: {
       marginLeft: 60
