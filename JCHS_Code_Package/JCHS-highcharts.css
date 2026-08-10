@@ -18,15 +18,16 @@
   stroke: inherit;
 }
 
-/* Same issue for the actual plotted series (not just the legend): the
-   highcharts-color-N class lands on the series' wrapping <g>, while the
-   line/area itself gets stroke/fill="var(--highcharts-color-N)" pointing
-   at Highcharts' own default palette instead of our colors above. Map
-   points are untouched here — their fill comes from colorAxis, not this
-   per-series palette, and already renders correctly. */
-.highcharts-series .highcharts-graph,
-.highcharts-series .highcharts-area {
-  fill: inherit;
+/* Same issue for the actual plotted series lines (not just the legend):
+   the highcharts-color-N class lands on the series' wrapping <g>, while
+   the line itself gets stroke="var(--highcharts-color-N)" pointing at
+   Highcharts' own default palette instead of our colors above. Only
+   stroke is inherited here — the line also carries fill="none" (to stay
+   unfilled), and inheriting fill too would override that "none" and
+   render it as a filled shape instead of a simple line. Map points are
+   untouched here — their fill comes from colorAxis, not this per-series
+   palette, and already renders correctly. */
+.highcharts-series .highcharts-graph {
   stroke: inherit;
 }
 
