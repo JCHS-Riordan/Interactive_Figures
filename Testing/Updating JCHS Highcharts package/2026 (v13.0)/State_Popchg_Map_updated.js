@@ -117,11 +117,6 @@ function createChart() {
           marginBottom: 25
         },
         legend: { y: -75, x: 0 }
-      },
-      buttons: {
-        contextButton: {
-          menuItems: ['viewFullDataset', 'separator', 'downloadPDF', 'separator', 'downloadPNG', 'downloadJPEG'] 
-        }
       }
     },
     

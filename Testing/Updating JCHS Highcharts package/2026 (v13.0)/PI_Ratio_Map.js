@@ -175,11 +175,6 @@ function createChart() {
           y: 80,
           x: -40
         }
-      },
-      buttons: {
-        contextButton: {
-          menuItems: ['viewFullDataset', 'separator', 'downloadPDF', 'separator', 'downloadPNG', 'downloadJPEG']
-        }
       }
     } // end exporting
 

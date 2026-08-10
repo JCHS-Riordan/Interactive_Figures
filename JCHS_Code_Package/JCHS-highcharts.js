@@ -107,9 +107,9 @@
         buttons: {
           contextButton: {
             text: 'Export',
-            menuItems: ['viewFullDataset',
-            //'viewSortableTable',
-            'separator', 'printChart', 'downloadPDF', 'separator', 'downloadPNG', 'downloadJPEG', 'separator', 'downloadXLS'] //end contextButtons
+            //JPEG dropped: no alpha channel support means the logo's transparent background
+            //renders as solid black instead of blending in, and PNG already covers this need
+            menuItems: ['viewFullDataset', 'downloadPDF', 'downloadPNG'] //end contextButtons
           } //end buttons
 
         } }, //end exporting

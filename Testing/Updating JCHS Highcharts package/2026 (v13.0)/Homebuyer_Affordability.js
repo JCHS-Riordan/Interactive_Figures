@@ -137,14 +137,9 @@ function createChart(data_selection, data_selection2, data_selection3) {
           marginBottom: 130 
         },
         title: { text: 'Housing Costs on the Median-Priced Home Are Rising Rapidly'},
-        legend: { 
+        legend: {
           y: -45
         },
-      },
-      buttons: {
-        contextButton: {
-          menuItems: ['viewFullDataset', 'separator', 'downloadPDF', 'separator', 'downloadPNG', 'downloadJPEG']
-        }
       }
     }
   } //end chart_options
