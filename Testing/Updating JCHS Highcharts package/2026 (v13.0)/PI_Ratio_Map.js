@@ -118,24 +118,7 @@ function createChart() {
 
     tooltip: {
       enabled: true,
-      useHTML: true,
       padding: 6,
-      backgroundColor: 'rgba(247,247,247,1)',
-
-      positioner: function(labelWidth, labelHeight, point) {
-        var chart = this.chart;
-        var x = point.plotX + chart.plotLeft + 10;
-        var y = point.plotY + chart.plotTop - (labelHeight / 2);
-
-        if (x + labelWidth > chart.chartWidth) {
-          x = point.plotX + chart.plotLeft - labelWidth - 10;
-        }
-
-        y = Math.max(chart.plotTop, y);
-        y = Math.min(chart.chartHeight - labelHeight, y);
-
-        return { x: x, y: y };
-      },
 
       formatter: function() {
         var point = this.point;
@@ -266,7 +249,7 @@ function getMetroInfo(metro_name, GEOID) {
 
     tooltip: {
       formatter: function() {
-        return '<b>' + this.x + '</b>: ' + H.JCHS.numFormat(this.y, 1);
+        return '<b>' + this.key + '</b>: ' + H.JCHS.numFormat(this.y, 1);
       }
     },
 
