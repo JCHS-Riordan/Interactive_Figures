@@ -11,7 +11,10 @@
    Highcharts' own default palette. Since fill is inheritable and the
    wrapping <g> already resolves to our custom color above, inherit it
    down to the swatch (a presentation attribute loses to any matching
-   author rule, so this is enough — no !important needed). */
+   author rule, so this is enough — no !important needed). Charts should
+   let dataClasses auto-assign a palette index (no explicit per-class
+   color) so this applies correctly — an explicit color has no matching
+   class on the wrapping <g> to inherit from, and would get blanked out. */
 .highcharts-legend-item .highcharts-point,
 .highcharts-legend-item .highcharts-graph {
   fill: inherit;
@@ -498,6 +501,14 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
   color: #eee;
   stroke: #333;
   stroke-width: 1px;
+
+  /* Map polygon borders get scale-compensated by Highcharts so they stay a
+     constant on-screen width; mapline series strokes don't get the same
+     treatment and instead scale down with the projection's huge raw
+     coordinate space, shrinking to a sub-pixel hairline. Locking the
+     stroke to actual screen pixels regardless of ancestor transforms
+     fixes that. */
+  vector-effect: non-scaling-stroke;
 }
 
 .highcharts-button-symbol {
