@@ -49,19 +49,7 @@
       buttons: {
         contextButton: {
           text: 'Export',
-          menuItems: [
-            'viewFullDataset',
-            //'viewSortableTable',
-            'separator',
-            'printChart',
-            //'downloadPDF',
-            //'separator',
-            //'downloadPNG',
-            //'downloadJPEG',
-            //'separator',
-            //'downloadXLS',
-            //'downloadFullData'
-          ]
+          menuItems: ['viewFullDataset', 'downloadPDF', 'downloadPNG']
         } //end contextButton
       } //end buttons
     }, //end exporting
