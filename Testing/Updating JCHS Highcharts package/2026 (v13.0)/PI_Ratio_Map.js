@@ -89,11 +89,11 @@ function createChart() {
 
     colorAxis: {
       dataClasses: [
-        { to: 3,          color: '#323e3d' },
-        { from: 3, to: 4, color: '#507687' },
-        { from: 4, to: 5, color: '#afccbf' },
-        { from: 5, to: 8, color: '#f89f5c' },
-        { from: 8,        color: '#bf4f27' }
+        { to: 3 },
+        { from: 3, to: 4 },
+        { from: 4, to: 5 },
+        { from: 5, to: 8 },
+        { from: 8 }
       ]
     },
 
