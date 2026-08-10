@@ -18,6 +18,18 @@
   stroke: inherit;
 }
 
+/* Same issue for the actual plotted series (not just the legend): the
+   highcharts-color-N class lands on the series' wrapping <g>, while the
+   line/area itself gets stroke/fill="var(--highcharts-color-N)" pointing
+   at Highcharts' own default palette instead of our colors above. Map
+   points are untouched here — their fill comes from colorAxis, not this
+   per-series palette, and already renders correctly. */
+.highcharts-series .highcharts-graph,
+.highcharts-series .highcharts-area {
+  fill: inherit;
+  stroke: inherit;
+}
+
 /* change chart zone colors here */
 .highcharts-area.zone-0, 
 .highcharts-point.zone-0  { stroke: #467b91; fill: #467b91; }
