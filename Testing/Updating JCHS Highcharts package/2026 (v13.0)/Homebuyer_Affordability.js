@@ -119,7 +119,7 @@ function createChart(data_selection, data_selection2, data_selection3) {
     tooltip: {
       shared: true,
       formatter: function() {
-        var tooltip_text = '<b>' + this.x + '</b>'
+        var tooltip_text = '<b>' + this.key + '</b>'
         this.points.forEach(function(point) {
           tooltip_text += '<br/><span class="highcharts-color-' + point.colorIndex + '">●</span> <b>' + 
             point.series.name + ':</b> $' + H.JCHS.numFormat(point.y, 0)
