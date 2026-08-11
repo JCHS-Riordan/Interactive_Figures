@@ -470,6 +470,12 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
 .highcharts-tooltip-box {
   color: #fff;
   fill-opacity: 1;
+  /* Highcharts 13's own default CSS sets stroke-width: 0 here (tooltips are
+     borderless by default now) via a runtime-injected stylesheet that loads
+     after ours, beating equal-specificity rules regardless of source order
+     — !important is required to win, matching the pattern already used
+     elsewhere in this file for the same reason (e.g. export menu dividers). */
+  stroke-width: 1px !important;
 }
 
 .highcharts-label-box { stroke: #999; } /* tooltip box stroke */
@@ -495,6 +501,16 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
 
 .highcharts-series:not(.highcharts-pie-series) .highcharts-point-select {
   fill: #333;
+}
+
+/* Highcharts 13's default map hover effect is fill-opacity: 0.5 alone, same
+   value production used, but without the instant transition or the
+   stroke-width bump production had — leaving it noticeably subtler and easy
+   to miss. Restoring both from the pre-v13 CSS. */
+.highcharts-map-series .highcharts-point-hover {
+  transition: fill 0ms, fill-opacity 0ms;
+  fill-opacity: 0.5;
+  stroke-width: 2px;
 }
 
 .highcharts-mapline-series .highcharts-point {
