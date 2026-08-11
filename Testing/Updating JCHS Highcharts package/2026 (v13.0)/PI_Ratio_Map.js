@@ -67,7 +67,14 @@ function createChart() {
     legend: {
       title: {
         text: 'Price-to-<br/>Income Ratio',
-        style: { fontWeight: 'normal' }
+
+        //bold to match State_Popchg_Map_updated.js's legend title. That chart sets no style
+        //override at all and still renders bold in the real export - Highcharts' own inline
+        //default there is font-weight: bold, and the export pipeline never sees this package's
+        //CSS (confirmed: a plain "font-weight: normal !important" class rule has no effect on
+        //the actual exported file, only on the live on-page chart), so matching it has to happen
+        //via this inline style option instead of a CSS rule.
+        style: { fontWeight: 'bold' }
       },
       layout: 'vertical',
       align: 'right',
@@ -151,7 +158,12 @@ function createChart() {
           },
           marginTop: 20,
           marginRight: 90,
-          marginBottom: 25
+
+          //25 let both the Alaska and Hawaii insets overlap the notes/source text below them
+          //(Alaska by ~13px, Hawaii by ~5px, at this chart's actual export dimensions) - shrinking
+          //the map a bit more via a taller bottom margin clears both with room to spare, same
+          //technique as State_Popchg_Map_updated.js's marginBottom fix for the same class of issue.
+          marginBottom: 60
         },
         legend: {
           y: 80,
