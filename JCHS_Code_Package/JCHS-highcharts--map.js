@@ -76,6 +76,28 @@
 
   H.setOptions(H.JCHS.mapOptions)
 
+  //Map hover's fill-opacity used to live in a `.highcharts-point-hover` CSS
+  //class rule (JCHS-highcharts.css). Confirmed via direct pixel sampling on a
+  //real, sustained hover: that class-triggered, paint-only CSS change
+  //silently fails to repaint on some Windows Chrome/Firefox setups. The
+  //hover border-width change, by contrast, is rock solid - because
+  //Highcharts sets it as a literal SVG attribute via pointAttribs()+attr(),
+  //not a CSS class. Folding fill-opacity into that same pointAttribs() call
+  //means it's applied via the identical, already-reliable .attr() call as
+  //the border, instead of a separate CSS-class toggle - sidesteps the
+  //repaint issue rather than trying to make the CSS path repaint reliably.
+  H.wrap(H.seriesTypes.map.prototype, 'pointAttribs', function (proceed, point, state) {
+    var attribs = proceed.call(this, point, state)
+
+    //.attr() only ever writes the keys present in this object - if the
+    //normal-state call doesn't set fill-opacity at all, unhovering never
+    //resets it and points stay painted forever (the "paint the whole
+    //country" bug). Every branch below must set it explicitly, not just hover.
+    attribs['fill-opacity'] = (state === 'hover') ? 0.5 : 1
+
+    return attribs
+  })
+
   // Fire drilldownFunction when user clicks on map
   H.addEvent(H.Chart, 'load', function () {
     var chart = this;
