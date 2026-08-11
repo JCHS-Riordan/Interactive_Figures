@@ -20,7 +20,14 @@ var categories = [],
     drilldown_chart = {}
 
 var popchg_legend_title = 'Population Change Rate<br/>(per 1,000 People), 2025'
-var domig_legend_title = 'Net Domestic Migration Rate<br/>(per 1,000 People), 2025'
+//split across more lines than the other three titles: "Net Domestic Migration Rate" alone
+//measures wider than any single line in the other titles, which pushed it into the export
+//canvas edge in the PDF export specifically (its text-measurement pass runs through a
+//different renderer than the PNG path and doesn't match the browser's own font metrics -
+//confirmed by a PDF export still clipping it at a legend x offset that looked fine in-browser).
+//Breaking it into shorter pieces keeps every line well clear of the edge in either renderer,
+//rather than relying on a razor-thin, renderer-dependent x offset.
+var domig_legend_title = 'Net Domestic<br/>Migration Rate<br/>(per 1,000 People),<br/>2025'
 var immig_legend_title = 'Immigration Rate<br/>(per 1,000 people), 2025'
 var natchg_legend_title = 'Natural Change Rate<br/>(per 1,000 people), 2025'
 
@@ -115,11 +122,7 @@ function createChart() {
           marginTop: 20,
           marginRight: 90,
 
-          //taller now that Notes/Source render as two stacked lines instead of one - a plain
-          //25 let the Alaska inset's bottom edge touch/overlap the top line. Shrinking the map
-          //a bit more here (rather than adjusting the notes text) keeps Alaska clear of it with
-          //room to spare, confirmed against the exported SVG at this chart's actual dimensions.
-          marginBottom: 55
+          marginBottom: 45
         },
         legend: { y: -75, x: 0 }
       }
@@ -263,7 +266,11 @@ function initUserInteraction () {
       case 3:  
         component = 'Net Domestic Migration'
         chart.legend.update({ title: { text: domig_legend_title } })
-        chart.exporting.update({ chartOptions: { title: { text: 'Domestic Migration by State' }, legend: { y: -75, x: 20 } } })
+
+        //used to need its own x offset here to avoid the title clipping the export canvas edge -
+        //now that domig_legend_title itself wraps to more/shorter lines (see its definition
+        //above), x:0 matches the other three cases with room to spare on both sides.
+        chart.exporting.update({ chartOptions: { title: { text: 'Domestic Migration by State' }, legend: { y: -75, x: 0 } } })
         break
       case 4:  
         component = 'Net International Migration'
