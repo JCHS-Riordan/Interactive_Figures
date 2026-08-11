@@ -508,27 +508,54 @@
     //link and keeping just its visible text lets normal word-wrapping apply to the whole string.
     text = text.replace(/<a\b[^>]*>(.*?)<\/a>/gi, '$1');
 
-    //same problem with the manual <br/> before "Source:" - Highcharts' auto-wrap only measures
-    //and inserts line breaks up to the first explicit <br/>, then stops, leaving everything after
-    //it (the whole "Source:" line) unwrapped. Using a plain space instead lets the auto-wrap
-    //treat the whole note as one continuous paragraph, so it keeps wrapping all the way through.
-    text = text.replace(/<br\s*\/?>/gi, ' ');
+    //split the manual <br/> that separates "Notes" from "Source" into two independent text
+    //elements (stacked below) rather than keeping it as one string. Keeping a single element
+    //doesn't work: Highcharts' auto-wrap only measures and inserts line breaks up to the first
+    //explicit <br/>, then stops, leaving everything after it (the whole "Source:" line) unwrapped
+    //and running off the edge of the canvas. Two self-wrapping blocks avoid that entirely, and
+    //stacking them is what actually gives Source a real line break below Notes.
+    var parts = text.split(/<br\s*\/?>/i);
+    var notes_text = parts[0].trim();
+    var source_text = parts.slice(1).join(' ').trim();
 
     //map charts put the logo bottom-right instead of bottom-left (see the 'load' handler
     //below) - shift the notes' right edge to end before it, so the two don't overlap
     var noteX = chart.options.chart.type === "map" ? -180 : -10;
 
-    //draw text
     //font-size/color set inline (not just via the JCHS-chart__table-notes--exporting class) because this
     //element only ever exists on the export-only chart clone, and Highcharts' export SVG generation can't
     //read this package's CSS (loaded cross-origin) to bake its rules in, unlike elements already on the
     //live chart. Without this, the text falls back to the export SVG's default size (~16px) instead of
     //7.5px, throws off the getBBox()-based positioning below, and can spill into the logo's corner.
-    var rendered_text = chart.renderer.text(text).css({ width: '420px', fontSize: '7.5px', color: '#666' }).addClass('JCHS-chart__table-notes--exporting').align({ align: 'right', verticalAlign: 'bottom', x: noteX, y: 8 }).add();
+    var note_css = { width: '420px', fontSize: '7.5px', color: '#666' };
 
-    //align to lower right corner
-    var box = rendered_text.getBBox();
-    rendered_text.translate(-box.width, -box.height);
+    function measureWidth(block_text) {
+      var probe = chart.renderer.text(block_text).css(note_css).add();
+      var width = probe.getBBox().width;
+      probe.destroy();
+      return width;
+    }
+
+    //align:'right' positions the pre-translate box at a fixed anchor regardless of the text's
+    //own width, then translating by -box.width is what turns that into a true right alignment -
+    //so translating every block by the SAME (widest) width instead of its own gives them all the
+    //same left edge, with shorter blocks simply falling short of the right edge (normal ragged-
+    //right, flush-left paragraph text) instead of each block hugging the right edge on its own.
+    function drawNoteBlock(block_text, y, shared_width) {
+      var el = chart.renderer.text(block_text).css(note_css).addClass('JCHS-chart__table-notes--exporting').align({ align: 'right', verticalAlign: 'bottom', x: noteX, y: y }).add();
+      var box = el.getBBox();
+      el.translate(-shared_width, -box.height);
+      return box.height;
+    }
+
+    var shared_width = Math.max(measureWidth(notes_text), source_text ? measureWidth(source_text) : 0);
+
+    //draw Source first so it's flush with the bottom edge regardless of how many lines Notes
+    //wraps to, then stack Notes directly above it using Source's actual rendered height.
+    //verticalAlign:'bottom' with a larger y pushes a block further DOWN (off the bottom edge),
+    //not up - so Notes needs a smaller/negative y relative to Source's, not a larger one.
+    var source_height = source_text ? drawNoteBlock(source_text, 8, shared_width) : 0;
+    drawNoteBlock(notes_text, source_text ? 8 - source_height - 2 : 8, shared_width);
   }; //end addTableNotes()
 
   /**

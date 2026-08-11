@@ -114,7 +114,12 @@ function createChart() {
           },
           marginTop: 20,
           marginRight: 90,
-          marginBottom: 25
+
+          //taller now that Notes/Source render as two stacked lines instead of one - a plain
+          //25 let the Alaska inset's bottom edge touch/overlap the top line. Shrinking the map
+          //a bit more here (rather than adjusting the notes text) keeps Alaska clear of it with
+          //room to spare, confirmed against the exported SVG at this chart's actual dimensions.
+          marginBottom: 55
         },
         legend: { y: -75, x: 0 }
       }
@@ -220,7 +225,7 @@ function drilldownChart(state_name, GEOID) {
     tooltip: {
       formatter: function() {
         var tooltip_text = ''
-        tooltip_text += '<b>' + this.x + '</b>: '
+        tooltip_text += '<b>' + this.key + '</b>: '
         tooltip_text += H.JCHS.numFormat(this.y, 1) + ' per 1,000 people'
         return tooltip_text
       }
