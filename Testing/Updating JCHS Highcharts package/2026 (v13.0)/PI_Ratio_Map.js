@@ -118,7 +118,6 @@ function createChart() {
 
     tooltip: {
       enabled: true,
-      padding: 6,
 
       formatter: function() {
         var point = this.point;
