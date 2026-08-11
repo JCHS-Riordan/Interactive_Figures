@@ -92,4 +92,13 @@
     } //end if
   }) //end addEvent 'load'
 
+  //A JS-based "nudge the inline style to force a repaint" fix used to live
+  //here (Highcharts 13's highcharts-point-hover class toggle doesn't reliably
+  //trigger an actual repaint of complex map paths on Windows Chrome/Firefox -
+  //confirmed via direct pixel sampling: fill-opacity computes correctly but
+  //the on-screen color never actually changes). That nudge tested correctly
+  //in every local/synthetic test but was proven, via real screen capture, to
+  //not work at all in the field. Replaced with a plain CSS fix - see
+  //will-change on .highcharts-map-series .highcharts-point in the CSS file.
+
 }(Highcharts))
