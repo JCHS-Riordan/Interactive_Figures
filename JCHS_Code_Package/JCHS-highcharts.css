@@ -520,18 +520,6 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
   vector-effect: non-scaling-stroke;
 }
 
-/* Confirmed via direct pixel sampling on a real, sustained (non-rapid) hover:
-   the fill-opacity above computes correctly the instant hover starts, but
-   the pixel color on screen never actually changes - identical RGB to
-   unhovered neighbors the entire time. will-change hints to the browser that
-   this element's opacity/fill-opacity is going to change, prompting it to
-   promote the shape onto its own compositing layer up front instead of
-   deciding (apparently incorrectly, at least on Windows Chrome/Firefox) that
-   a plain class-toggle doesn't need a real repaint. */
-.highcharts-map-series .highcharts-point {
-  will-change: fill-opacity, opacity;
-}
-
 .highcharts-mapline-series .highcharts-point {
   color: #eee;
   stroke: #333;

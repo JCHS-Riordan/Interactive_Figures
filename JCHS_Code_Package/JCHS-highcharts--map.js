@@ -13,11 +13,30 @@
         allAreas: false,
         allowPointSelect: true,
         joinBy: ['GEOID', 0],
-        keys: ['GEOID', 'value']
+        keys: ['GEOID', 'value'],
+
+        //Highcharts' own default hover state (confirmed via chart.styledMode
+        //being false - this chart isn't in styled mode despite our CSS-class
+        //based color scheme, so hover changes go through Highcharts' own
+        //pointAttribs()+animate() path, not a CSS class toggle) animates the
+        //fill-opacity/border change over 150ms. That JS-driven animation is
+        //the confirmed point of failure - on at least some Windows
+        //Chrome/Firefox setups, it silently never completes/paints (proven
+        //via direct pixel sampling: color stays byte-identical to unhovered
+        //neighbors for the full duration of a real, sustained hover).
+        //Forcing it to apply instantly via a direct .attr() instead of an
+        //animated transition sidesteps whatever's wrong with the animation
+        //path entirely, rather than trying to force/repair it after the fact.
+        states: {
+          hover: { animation: false },
+          select: { animation: false },
+          normal: { animation: false },
+          inactive: { animation: false }
+        }
       }, //end plotOptions.map
 
       mapline: { enableMouseTracking: false }
-    
+
     }, //end plotOptions
 
     colorAxis: {
@@ -92,13 +111,15 @@
     } //end if
   }) //end addEvent 'load'
 
-  //A JS-based "nudge the inline style to force a repaint" fix used to live
-  //here (Highcharts 13's highcharts-point-hover class toggle doesn't reliably
-  //trigger an actual repaint of complex map paths on Windows Chrome/Firefox -
-  //confirmed via direct pixel sampling: fill-opacity computes correctly but
-  //the on-screen color never actually changes). That nudge tested correctly
-  //in every local/synthetic test but was proven, via real screen capture, to
-  //not work at all in the field. Replaced with a plain CSS fix - see
-  //will-change on .highcharts-map-series .highcharts-point in the CSS file.
+  //Several rounds of "force a repaint after the fact" JS hacks used to live
+  //here, all confirmed (via direct pixel sampling on a real, sustained
+  //hover) to silently fail in the field despite passing every local test.
+  //Root cause turned out to be upstream of any of that: chart.styledMode is
+  //false, so hover isn't a CSS class toggle at all - Highcharts animates to
+  //it via its own pointAttribs()+graphic.animate() over 150ms, and that
+  //animation path is what doesn't reliably paint. Disabling the animation
+  //at the source (states.hover.animation: false, above) makes it an instant
+  //.attr() call instead, which is the actual fix - nothing left to patch
+  //here.
 
 }(Highcharts))
