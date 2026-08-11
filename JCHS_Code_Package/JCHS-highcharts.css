@@ -503,10 +503,11 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
   fill: #333;
 }
 
-/* Highcharts 13's default map hover effect is fill-opacity: 0.5 alone, same
-   value production used, but without the instant transition or the
-   stroke-width bump production had — leaving it noticeably subtler and easy
-   to miss. Restoring both from the pre-v13 CSS.
+/* fill-opacity on hover is now set as a literal SVG attribute from JS (see
+   the pointAttribs() wrap in JCHS-highcharts--map.js) rather than through
+   this class, so a real, sustained hover repaints reliably - a CSS rule here
+   would win the cascade over that inline attribute and silently reintroduce
+   the same repaint issue. Only the border tweak stays CSS-driven.
    vector-effect is required on the stroke-width: map points sit inside a
    heavily scaled-down transform (the projection maps huge raw geographic
    coordinates down to screen pixels), so a plain "2px" gets interpreted in
@@ -514,8 +515,6 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
    same root cause as the mapline border fix above. This locks it to actual
    screen pixels regardless of zoom/projection scale. */
 .highcharts-map-series .highcharts-point-hover {
-  transition: fill 0ms, fill-opacity 0ms;
-  fill-opacity: 0.5;
   stroke-width: 2px;
   vector-effect: non-scaling-stroke;
 }
