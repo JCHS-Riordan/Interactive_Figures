@@ -16,6 +16,16 @@ var selected_GEOID = ""
 
 var default_selection = 3
 
+//keyed by the same radio button values used in the tooltip formatter's switch statement below
+var title_by_selection = {
+  2: 'Cost-Burdened Share by Metro',
+  3: 'Cost-Burdened Renter Share by Metro',
+  4: 'Cost-Burdened Homeowner Share by Metro',
+  5: 'Severely Cost-Burdened Share by Metro',
+  6: 'Severely Cost-Burdened Renter Share by Metro',
+  7: 'Severely Cost-Burdened Homeowner Share by Metro'
+}
+
 var categories = [],
     ref_data = [],
     selected_data = [],
@@ -53,6 +63,7 @@ function createChart() {
   /*~~~~~~~ Chart Options ~~~~~~~*/
   chart_options = {
     JCHS: {
+      tableNotes: table_notes
     },
     chart: {
       events: {
@@ -109,15 +120,13 @@ function createChart() {
 
     // Exporting options
     exporting: {
+      filename: title_by_selection[default_selection] + ' - Harvard JCHS - State of the Nation\'s Housing 2026',
       JCHS: { sheetID: sheetID },
       chartOptions: {
-        title: { text: chart_title },
+        title: { text: title_by_selection[default_selection] },
+        chart: { marginTop: 30, marginBottom: 90, marginRight: 120 },
+        legend: { x: 0, y: -75 },
       },
-      buttons: {
-        contextButton: {
-          menuItems: ['viewFullDataset']
-        } //end contextButtons
-      } //end buttons
     }, //end exporting
     
     tooltip: {
@@ -199,8 +208,13 @@ function initUserInteraction () {
     var new_data = ref_data.map(function (x) {
       return [x[0], x[new_col]]
     })
-    chart.series[0].update({name: categories[new_col]})   
+    chart.series[0].update({name: categories[new_col]})
     chart.series[0].setData(new_data)
+
+    chart.exporting.update({
+      filename: title_by_selection[new_col] + ' - Harvard JCHS - State of the Nation\'s Housing 2026',
+      chartOptions: { title: { text: title_by_selection[new_col] } }
+    })
   })
 }
 
