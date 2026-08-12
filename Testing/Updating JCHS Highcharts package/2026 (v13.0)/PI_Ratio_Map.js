@@ -158,16 +158,11 @@ function createChart() {
           },
           marginTop: 20,
           marginRight: 90,
-
-          //25 let both the Alaska and Hawaii insets overlap the notes/source text below them
-          //(Alaska by ~13px, Hawaii by ~5px, at this chart's actual export dimensions) - shrinking
-          //the map a bit more via a taller bottom margin clears both with room to spare, same
-          //technique as State_Popchg_Map_updated.js's marginBottom fix for the same class of issue.
           marginBottom: 60
         },
         legend: {
-          y: 80,
-          x: -40
+          y: 40,
+          x: -30
         }
       }
     } // end exporting
