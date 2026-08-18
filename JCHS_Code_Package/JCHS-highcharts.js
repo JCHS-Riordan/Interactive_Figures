@@ -33,7 +33,10 @@
         marginTop: 40
       },
 
-      title: { text: null },
+      //v13 defaults to minScale: 0.67 and force-switches align to 'left' once a title
+      //no longer fits at full size - long titles were silently rendering left-aligned
+      //and shrunk instead of centered/full-size like short ones. Pin both explicitly.
+      title: { text: null, align: 'center', minScale: 1 },
 
       subtitle: { text: null },
 
