@@ -57,6 +57,25 @@
         } else {
           return this.from + ' – ' + this.to
         }
+      },
+      events: {
+        //v6 legend items weren't clickable at all for a colorAxis legend -
+        //v13 added a default click-to-hide-that-class behavior (strikethrough
+        //text + fading its points) that was never wanted here. Returning
+        //false cancels that default action, but a click while hovering also
+        //leaves the hovered point(s) stuck in their 'hover' state with the
+        //highcharts-legend-series-active marker already gone (confirmed:
+        //Highcharts clears that marker on click but not the point's own
+        //hover state) - the CSS fix that neutralizes legend-hover highlighting
+        //keys off that marker, so once it's gone the point's plain, unscoped
+        //hover styling (2px border, faded fill) takes back over. Explicitly
+        //resetting every point's state on click closes that gap directly.
+        itemClick: function () {
+          this.chart.series.forEach(function (s) {
+            s.points.forEach(function (p) { if (p.state) p.setState('') })
+          })
+          return false
+        }
       }
     }, //end legend
 
