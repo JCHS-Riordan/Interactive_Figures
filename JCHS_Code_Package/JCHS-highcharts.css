@@ -597,7 +597,15 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
    The border-thickening this class also used to get is handled separately
    now (see .jchs-direct-hover above) - keying it off this same marker
    caused a visible flicker, since the marker arrives several steps after
-   the point is already in 'hover' state. */
+   the point is already in 'hover' state.
+   Highcharts' own (pre-JCHS) hover logic also darkens the border color itself
+   - stroke goes from var(--highcharts-neutral-color-20) to ...-60 as a plain
+   presentation attribute - independently of the width/fill-opacity handled
+   above, and nothing else here neutralizes it. Confirmed via a real legend
+   hover: the darker border applies immediately and holds for as long as the
+   legend item stays hovered, with no direct interaction on the map at all.
+   Pinning stroke back to the normal-state value here fixes it the same way. */
 .highcharts-legend-series-active .highcharts-point-hover {
   fill-opacity: 1;
+  stroke: var(--highcharts-neutral-color-20);
 }
