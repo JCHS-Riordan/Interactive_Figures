@@ -32,6 +32,26 @@
           select: { animation: false },
           normal: { animation: false },
           inactive: { animation: false }
+        },
+
+        //Highcharts puts a point into 'hover' state (adding highcharts-point-hover)
+        //both for a genuine direct mouse-over AND, separately, when its legend item
+        //is hovered instead - and does the legend-triggered version several steps
+        //before it adds the highcharts-legend-series-active marker the CSS below
+        //keys off (confirmed straight from Highcharts' own Legend.setItemEvents
+        //source: it calls setState('hover') well before addClass(marker) in the
+        //same handler). CSS can only react to classes once they exist, so during
+        //that gap the border briefly renders at the plain hover width before the
+        //marker arrives and the override applies - a visible flicker even though
+        //both the start and end states are individually correct. A real mouseOver
+        //on the point's own element (which legend hover never fires) has no such
+        //gap, so tag it directly here and gate the hover border width in CSS on
+        //this tag instead of the marker - removes the race instead of racing it.
+        point: {
+          events: {
+            mouseOver: function () { this.graphic && this.graphic.addClass('jchs-direct-hover') },
+            mouseOut: function () { this.graphic && this.graphic.removeClass('jchs-direct-hover') }
+          }
         }
       }, //end plotOptions.map
 

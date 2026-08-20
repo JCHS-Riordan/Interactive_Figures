@@ -513,8 +513,15 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
    coordinates down to screen pixels), so a plain "2px" gets interpreted in
    that pre-transform coordinate space and renders as a sub-pixel hairline —
    same root cause as the mapline border fix above. This locks it to actual
-   screen pixels regardless of zoom/projection scale. */
-.highcharts-map-series .highcharts-point-hover {
+   screen pixels regardless of zoom/projection scale.
+   Gated on .jchs-direct-hover (set by the point.events.mouseOver/mouseOut
+   pair in JCHS-highcharts--map.js) rather than plain .highcharts-point-hover:
+   Highcharts also adds -point-hover when a legend item is hovered, several
+   steps before it adds the highcharts-legend-series-active marker used
+   elsewhere in this file to suppress that case - so keying off the marker
+   here caused a visible flicker (border briefly widens, then narrows back)
+   during that gap. A real point mouseOver has no such gap. */
+.highcharts-map-series .highcharts-point-hover.jchs-direct-hover {
   stroke-width: 2px;
   vector-effect: non-scaling-stroke;
 }
@@ -581,21 +588,16 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
 /* The matching points in that same legend-hovered class also get washed out
    to fill-opacity 0.5 (JCHS-highcharts--map.js's pointAttribs wrap sets this
    for any 'hover' state, including the one Highcharts puts matching points
-   into when their legend item - not the point itself - is hovered) and get
-   a thicker 2px border from the plain hover rule below. Both are wanted for
-   a genuine direct point hover, so neither can be neutralized outright;
-   scope the override to when the legend triggered it, using the same
-   highcharts-legend-series-active marker as the rule above (confirmed: a
-   direct point hover never adds this class, only legend hover does, for
-   both this dataClass case and the multi-series case above). The
-   stroke-width/vector-effect pair matches this file's own convention for a
-   normal-weight, always-crisp map border (see .highcharts-mapline-series
-   .highcharts-point below) rather than resetting to a CSS default, since
-   the point's own un-hovered border comes from a huge pre-scaled attribute
-   Highcharts sets directly (not from any CSS), which "initial"/"unset"
-   can't fall back to. */
+   into when their legend item - not the point itself - is hovered). That
+   0.5 wash is wanted for a genuine direct point hover, so it can't just be
+   neutralized outright; scope the override to when the legend triggered it,
+   using the same highcharts-legend-series-active marker as the rule above
+   (confirmed: a direct point hover never adds this class, only legend hover
+   does, for both this dataClass case and the multi-series case above).
+   The border-thickening this class also used to get is handled separately
+   now (see .jchs-direct-hover above) - keying it off this same marker
+   caused a visible flicker, since the marker arrives several steps after
+   the point is already in 'hover' state. */
 .highcharts-legend-series-active .highcharts-point-hover {
   fill-opacity: 1;
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
 }
