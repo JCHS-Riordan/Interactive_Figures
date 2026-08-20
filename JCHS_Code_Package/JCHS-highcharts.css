@@ -564,7 +564,29 @@ input[type=range].JCHS-chart__slider:focus::-ms-fill-upper {
 /* legend hover effect (highlight hovered series by graying out other series) doesn't work correctly on maps */
 .highcharts-legend-series-active g.highcharts-map-series:not(.highcharts-series-hover),
 .highcharts-legend-series-active g.highcharts-mapline-series:not(.highcharts-series-hover),
-.highcharts-legend-series-active g.highcharts-tilemap-series:not(.highcharts-series-hover), 
-.highcharts-legend-series-active g.highcharts-mapline-series:not(.highcharts-series-hover) {  
+.highcharts-legend-series-active g.highcharts-tilemap-series:not(.highcharts-series-hover),
+.highcharts-legend-series-active g.highcharts-mapline-series:not(.highcharts-series-hover) {
   opacity: initial;
+}
+
+/* Same call as above, one level down: hovering a colorAxis dataClass legend
+   item (a single map series' own legend, not a second series) fades every
+   point NOT in that class to opacity 0.2 via this class - Highcharts didn't
+   do this in v6, and on JCHS maps it just looks like flicker rather than a
+   helpful highlight. Neutralized the same way. */
+.highcharts-point-inactive {
+  opacity: 1;
+}
+
+/* The matching points in that same legend-hovered class also get washed out
+   to fill-opacity 0.5 (JCHS-highcharts--map.js's pointAttribs wrap sets this
+   for any 'hover' state, including the one Highcharts puts matching points
+   into when their legend item - not the point itself - is hovered). That
+   0.5 wash is wanted for a genuine direct point hover, so it can't just be
+   neutralized outright; scope the override to when the legend triggered it,
+   using the same highcharts-legend-series-active marker as the rule above
+   (confirmed: a direct point hover never adds this class, only legend hover
+   does, for both this dataClass case and the multi-series case above). */
+.highcharts-legend-series-active .highcharts-point-hover {
+  fill-opacity: 1;
 }
