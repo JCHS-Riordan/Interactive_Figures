@@ -595,6 +595,21 @@
   //set standard options as default for all charts
   H.setOptions(JCHS.standardOptions);
 
+  //Highcharts 13 ships its own dark-mode support: many of its --highcharts-* CSS
+  //variables (background, neutral/border grays, etc.) are redefined via the CSS
+  //light-dark() function tied to `color-scheme` on .highcharts-container, which
+  //v6 never had at all - so charts that always rendered the same regardless of the
+  //viewer's OS/browser preference (a hardcoded look built for a specific published
+  //page) now silently go dark-themed for any visitor with dark mode on, with no
+  //change on JCHS's end. Highcharts' own escape hatch for exactly this - pin every
+  //chart on the page to its light variant regardless of viewer preference - is this
+  //class on any ancestor of .highcharts-container (see the CSS Highcharts injects
+  //at runtime: ".highcharts-light .highcharts-container { color-scheme: light; }").
+  //Confirmed via a real render with the OS/browser forced to dark: without this,
+  //.highcharts-background's fill resolves to #141414 (near-black); with it, #ffffff
+  //regardless of the emulated OS preference.
+  document.documentElement.classList.add('highcharts-light');
+
   //run on chart load
   H.addEvent(H.Chart, 'load', function () {
     var chart = this;
