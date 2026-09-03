@@ -11,12 +11,23 @@
    Highcharts' own default palette. Since fill is inheritable and the
    wrapping <g> already resolves to our custom color above, inherit it
    down to the swatch (a presentation attribute loses to any matching
-   author rule, so this is enough — no !important needed). Charts should
-   let dataClasses auto-assign a palette index (no explicit per-class
-   color) so this applies correctly — an explicit color has no matching
-   class on the wrapping <g> to inherit from, and would get blanked out. */
-.highcharts-legend-item .highcharts-point,
-.highcharts-legend-item .highcharts-graph {
+   author rule, so this is enough — no !important needed).
+   An explicitly-colored series/dataClass (e.g. a per-series `color` option
+   from the chart builder's Series colors picker, or a per-class map
+   breakpoint color) gets NO numbered class at all - Highcharts instead
+   stamps a literal "highcharts-color-undefined" class, since it considers
+   the color fully specified and skips computing a palette index for it.
+   The [class*="highcharts-color-"] qualifier below only matches when a
+   REAL index (0, 1, 2, ...) is present; :not(...-undefined) excludes the
+   literal "undefined" class specifically, since it also contains that
+   same substring. Without this qualifier, `inherit` would pull `fill`/
+   `stroke` from an ancestor with no color info at all (initial value -
+   black fill, no stroke), blanking out the exact colors this feature
+   exists to apply. Confirmed via a real render: an explicit series color
+   produced a literal class="...highcharts-color-undefined..." wrapper
+   and a fully invisible line/legend swatch before this qualifier was added. */
+.highcharts-legend-item[class*="highcharts-color-"]:not([class*="highcharts-color-undefined"]) .highcharts-point,
+.highcharts-legend-item[class*="highcharts-color-"]:not([class*="highcharts-color-undefined"]) .highcharts-graph {
   fill: inherit;
   stroke: inherit;
 }
@@ -29,8 +40,11 @@
    unfilled), and inheriting fill too would override that "none" and
    render it as a filled shape instead of a simple line. Map points are
    untouched here — their fill comes from colorAxis, not this per-series
-   palette, and already renders correctly. */
-.highcharts-series .highcharts-graph {
+   palette, and already renders correctly. See the comment above for why
+   the [class*="highcharts-color-"]:not(...-undefined) qualifier is here -
+   an explicitly-colored series (no real color-N index) must keep its own
+   stroke="#hex" attribute instead of inheriting a colorless ancestor. */
+.highcharts-series[class*="highcharts-color-"]:not([class*="highcharts-color-undefined"]) .highcharts-graph {
   stroke: inherit;
 }
 
