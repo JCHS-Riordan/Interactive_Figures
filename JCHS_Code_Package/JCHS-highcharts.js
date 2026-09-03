@@ -347,6 +347,12 @@
    */
 
   JCHS.yAxisTitle = function (chart, yAxis_title, yAxis2_title) {
+    //'render' can fire more than once during a single chart's initial construction (and
+    //again on every resize) - remove any previously-drawn title(s) first, scoped to this
+    //chart's own container, or each call stacks a fresh copy on top of the last instead
+    //of replacing it (invisible until a resize actually separates the overlapping copies)
+    $(chart.container).find('.highcharts-axis-title').remove();
+
     chart.renderer.text(yAxis_title).addClass('highcharts-axis-title').align({ y: -5 }, false, 'plotBox').add();
 
     //add title to second yAxis, if it exists
