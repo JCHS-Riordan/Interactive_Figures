@@ -1,9 +1,18 @@
 /* change chart colors here */
-.highcharts-color-0 { fill: #8cb7c7; stroke: #8cb7c7; }
-.highcharts-color-1 { fill: #e0ba1b; stroke: #e0ba1b; }
-.highcharts-color-2 { fill: #3b1f2e; stroke: #3b1f2e; }
-.highcharts-color-3 { fill: #998b7d; stroke: #998b7d; }
-.highcharts-color-4 { fill: #c1b9b1; stroke: #c1b9b1; }
+/* :not(.highcharts-null-point) matters for any map with partial data (colorAxis
+   nullColor for the counties/states with no value) - Highcharts tags a null point
+   with BOTH highcharts-null-point AND a real highcharts-color-N class (index 0),
+   so without this exclusion these rules recolor "no data" points with dataClass 0's
+   color instead of leaving nullColor's own fill/stroke attribute in effect. Any pen
+   that redefines these classes itself (nearly all of them do, to apply the JCHS
+   palette per chart) needs the same :not(.highcharts-null-point) on its own copy of
+   these rules - this file's version only protects charts using the un-overridden
+   defaults below. */
+.highcharts-color-0:not(.highcharts-null-point) { fill: #8cb7c7; stroke: #8cb7c7; }
+.highcharts-color-1:not(.highcharts-null-point) { fill: #e0ba1b; stroke: #e0ba1b; }
+.highcharts-color-2:not(.highcharts-null-point) { fill: #3b1f2e; stroke: #3b1f2e; }
+.highcharts-color-3:not(.highcharts-null-point) { fill: #998b7d; stroke: #998b7d; }
+.highcharts-color-4:not(.highcharts-null-point) { fill: #c1b9b1; stroke: #c1b9b1; }
 
 /* Highcharts 13 puts the highcharts-color-N class on the legend item's
    wrapping <g>, not on the swatch itself, and colors the swatch via a
