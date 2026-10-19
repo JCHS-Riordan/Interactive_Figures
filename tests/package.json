@@ -1,0 +1,13 @@
+{
+  "name": "jchs-package-regression",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "A/B regression harness: renders published JCHS interactives against the live code package and against the working tree, then diffs them.",
+  "scripts": {
+    "test": "node run.js"
+  },
+  "devDependencies": {
+    "playwright": "1.49.1"
+  }
+}

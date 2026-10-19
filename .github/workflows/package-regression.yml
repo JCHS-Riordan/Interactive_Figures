@@ -1,0 +1,56 @@
+name: Package regression (A/B against published interactives)
+
+# The three files in JCHS_Code_Package are hosted on S3 and loaded at runtime by
+# every published interactive, so a change here reaches live charts without any
+# of them being redeployed. This job renders the test corpus twice - once against
+# the live package, once against this branch - and fails if anything differs.
+on:
+  pull_request:
+    paths:
+      - 'JCHS_Code_Package/**'
+      - 'tests/**'
+      - '.github/workflows/package-regression.yml'
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Run a single interactive by name (blank = all)'
+        required: false
+        default: ''
+
+jobs:
+  ab-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: tests
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        working-directory: tests
+        run: npx playwright install --with-deps chromium
+
+      - name: A/B the corpus against the working tree
+        working-directory: tests
+        run: |
+          if [ -n "${{ github.event.inputs.only }}" ]; then
+            node run.js --only='${{ github.event.inputs.only }}'
+          else
+            node run.js
+          fi
+
+      - name: Upload snapshots and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ab-artifacts
+          path: tests/artifacts/
+          if-no-files-found: warn
+          retention-days: 14

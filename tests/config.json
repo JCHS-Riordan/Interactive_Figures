@@ -1,0 +1,16 @@
+{
+  "corpusDir": "../Testing/Updating JCHS Highcharts package/2026 (v13.0)",
+  "packageDir": "../JCHS_Code_Package",
+  "packagePrefix": "https://harvard-jchs.s3.us-east-1.amazonaws.com/jchs-highcharts/Highcharts_v13/",
+  "packageFiles": [
+    "JCHS-highcharts.css",
+    "JCHS-highcharts.js",
+    "JCHS-highcharts--map.js"
+  ],
+  "viewports": [
+    { "name": "desktop", "width": 900, "height": 700 },
+    { "name": "narrow", "width": 480, "height": 700 },
+    { "name": "phone", "width": 380, "height": 700 }
+  ],
+  "readyTimeoutMs": 45000
+}
