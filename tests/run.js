@@ -20,6 +20,46 @@ const only = onlyArg ? onlyArg.split('=')[1] : null;
 const outArg = argv.find((a) => a.startsWith('--out='));
 const outDir = path.resolve(__dirname, outArg ? outArg.split('=')[1] : 'artifacts');
 
+/**
+ * Some CDNs refuse requests they do not like the look of - code.highcharts.com
+ * 403s a request with no Referer, and GitHub's runners get blocked outright, which
+ * surfaces in the browser as net::ERR_BLOCKED_BY_ORB because a 403 body handed to a
+ * <script> tag is not JavaScript. Fetching these from Node instead sidesteps both:
+ * Node is not subject to ORB and the headers are ours to set. Fetched once per run
+ * and shared by every interactive and both passes, which also pins the Highcharts
+ * build across the A/B.
+ */
+const nodeFetchCache = new Map();
+
+async function fetchViaNode(url, referer) {
+  if (nodeFetchCache.has(url)) return nodeFetchCache.get(url);
+  const resp = await fetch(url, {
+    headers: {
+      referer: referer,
+      'user-agent':
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36',
+    },
+  });
+  if (!resp.ok) {
+    throw new Error('prefetch of ' + url + ' failed with HTTP ' + resp.status);
+  }
+  const entry = {
+    status: resp.status,
+    body: Buffer.from(await resp.arrayBuffer()),
+    contentType: contentType(url),
+  };
+  nodeFetchCache.set(url, entry);
+  return entry;
+}
+
+function matchNodeFetchPrefix(url) {
+  const prefixes = cfg.nodeFetchPrefixes || {};
+  for (const prefix of Object.keys(prefixes)) {
+    if (url.startsWith(prefix)) return prefixes[prefix];
+  }
+  return null;
+}
+
 function contentType(file) {
   if (file.endsWith('.css')) return 'text/css; charset=utf-8';
   if (file.endsWith('.js')) return 'application/javascript; charset=utf-8';
@@ -118,6 +158,16 @@ async function runPass(browser, origin, item, mode, cache) {
     }
 
     if (url.indexOf(origin) === 0) return route.continue();
+
+    const referer = matchNodeFetchPrefix(url);
+    if (referer) {
+      const hit = await fetchViaNode(url, referer);
+      return route.fulfill({
+        status: hit.status,
+        contentType: hit.contentType,
+        body: hit.body,
+      });
+    }
 
     if (mode === 'candidate') {
       if (cache.has(url)) {

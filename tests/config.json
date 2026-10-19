@@ -7,6 +7,9 @@
     "JCHS-highcharts.js",
     "JCHS-highcharts--map.js"
   ],
+  "nodeFetchPrefixes": {
+    "https://code.highcharts.com/": "https://www.highcharts.com/"
+  },
   "viewports": [
     { "name": "desktop", "width": 900, "height": 700 },
     { "name": "narrow", "width": 480, "height": 700 },
