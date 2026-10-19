@@ -42,8 +42,59 @@ function contentType(file) {
 async function runPass(browser, origin, item, mode, cache) {
   const page = await browser.newPage({ viewport: cfg.viewports[0] });
   const misses = [];
+  const consoleLines = [];
+  const pageErrors = [];
+  const failedRequests = [];
 
+  page.on('console', (m) => consoleLines.push(m.type() + ': ' + m.text()));
+  page.on('pageerror', (e) => pageErrors.push(String(e && e.message ? e.message : e)));
+  page.on('requestfailed', (r) => {
+    const f = r.failure();
+    failedRequests.push(r.url() + ' — ' + (f && f.errorText ? f.errorText : 'unknown'));
+  });
+
+  // On the control pass requests are passed straight through and recorded here,
+  // rather than re-fetched and re-fulfilled. Re-fulfilling means rebuilding the
+  // response headers by hand, and getting CORS or content-type subtly wrong there
+  // breaks the page for reasons that have nothing to do with the package.
+  const recording = [];
+  if (mode === 'control') {
+    page.on('response', (resp) => {
+      const url = resp.url();
+      if (url.startsWith(cfg.packagePrefix) || url.indexOf(origin) === 0) return;
+      recording.push(
+        resp
+          .body()
+          .then((body) => {
+            const headers = Object.assign({}, resp.headers());
+            delete headers['content-encoding'];
+            delete headers['content-length'];
+            cache.set(url, { status: resp.status(), headers: headers, body: body });
+          })
+          .catch(() => {
+            /* redirects and 204s have no readable body; nothing to replay */
+          })
+      );
+    });
+  }
+
+  // Every branch below must end in fulfill/continue/abort. If a handler throws, the
+  // request hangs forever instead of failing, and a hung <script> means the chart
+  // never initialises - which looks like "nothing rendered" with no clue why.
   await page.route('**/*', async (route) => {
+    try {
+      await handleRoute(route, origin, mode, cache, misses);
+    } catch (err) {
+      failedRequests.push(route.request().url() + ' — route handler threw: ' + err.message);
+      try {
+        await route.continue();
+      } catch (_) {
+        /* already handled or the page is gone */
+      }
+    }
+  });
+
+  async function handleRoute(route, origin, mode, cache, misses) {
     const url = route.request().url();
 
     if (url.startsWith(cfg.packagePrefix)) {
@@ -68,27 +119,55 @@ async function runPass(browser, origin, item, mode, cache) {
 
     if (url.indexOf(origin) === 0) return route.continue();
 
-    if (mode === 'candidate' && cache.has(url)) {
-      const hit = cache.get(url);
-      return route.fulfill({ status: hit.status, headers: hit.headers, body: hit.body });
+    if (mode === 'candidate') {
+      if (cache.has(url)) {
+        const hit = cache.get(url);
+        return route.fulfill({ status: hit.status, headers: hit.headers, body: hit.body });
+      }
+      // Nothing recorded for this one, so it has to go to the network and is not
+      // pinned. Reported as a warning, since an unpinned response is a possible
+      // source of a difference that is not the package's doing.
+      misses.push(url);
+      return route.continue();
     }
-    if (mode === 'candidate') misses.push(url);
 
-    const resp = await route.fetch();
-    const body = await resp.body();
-    const headers = Object.assign({}, resp.headers());
-    delete headers['content-encoding'];
-    delete headers['content-length'];
-    cache.set(url, { status: resp.status(), headers: headers, body: body });
-    return route.fulfill({ status: resp.status(), headers: headers, body: body });
-  });
+    return route.continue();
+  }
 
   await page.goto(origin + '/' + encodeURIComponent(item.name), { waitUntil: 'load' });
   // Text metrics drive Highcharts' legend and axis layout, so a font that lands
   // after render in one pass and before it in the other would shift geometry for
   // reasons that have nothing to do with the package.
   await page.evaluate('document.fonts.ready.then(function () { return true; })');
-  await waitForChart(page, cfg.readyTimeoutMs);
+  try {
+    await waitForChart(page, cfg.readyTimeoutMs);
+  } catch (err) {
+    // Say WHY nothing rendered rather than just that nothing did.
+    const state = await page.evaluate(
+      '(function () { return {' +
+        'jquery: typeof window.jQuery,' +
+        'highcharts: typeof window.Highcharts,' +
+        'jchs: !!(window.Highcharts && window.Highcharts.JCHS),' +
+        'chartCount: ((window.Highcharts && window.Highcharts.charts) || []).filter(Boolean).length,' +
+        'points: document.querySelectorAll(".highcharts-point").length' +
+        '}; })()'
+    );
+    const detail = [
+      err.message + ' [' + mode + ']',
+      '    page state: ' + JSON.stringify(state),
+      failedRequests.length
+        ? '    failed requests:\n      ' + failedRequests.slice(0, 8).join('\n      ')
+        : '    failed requests: none',
+      pageErrors.length ? '    page errors:\n      ' + pageErrors.slice(0, 5).join('\n      ') : '',
+      consoleLines.length
+        ? '    console tail:\n      ' + consoleLines.slice(-8).join('\n      ')
+        : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    await page.close();
+    throw new Error(detail);
+  }
   await page.waitForTimeout(400);
 
   const snapshot = {};
@@ -113,8 +192,11 @@ async function runPass(browser, origin, item, mode, cache) {
   fs.mkdirSync(path.join(outDir, item.name), { recursive: true });
   await page.screenshot({ path: path.join(outDir, item.name, mode + '.png'), fullPage: true });
 
+  // Response bodies have to be read off the wire before the page goes away, or the
+  // candidate pass would find an incomplete cache and silently fall back to the network.
+  await Promise.all(recording);
   await page.close();
-  return { snapshot: normalizeSnapshot(snapshot), misses: misses };
+  return { snapshot: normalizeSnapshot(snapshot), misses: misses, recorded: cache.size };
 }
 
 (async function main() {
