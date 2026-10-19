@@ -67,7 +67,11 @@ async function probeHover(page) {
   return page.evaluate(`(() => {
     const c = ${MAIN};
     const s = c.series.find(s => s.points && s.points.length);
-    const pts = s.points.filter(p => p.graphic);
+    // Map points always carry their own graphic; line and area series usually have
+    // markers disabled, so fall back to the points themselves and just record no
+    // per-point computed style for those. Without this a line chart is a false failure.
+    const withGraphic = s.points.filter(p => p.graphic);
+    const pts = withGraphic.length ? withGraphic : s.points;
     if (!pts.length) throw new Error('hover probe found no rendered points');
     const pick = [0, Math.floor(pts.length / 2), pts.length - 1]
       .filter((v, i, a) => a.indexOf(v) === i);
@@ -102,7 +106,10 @@ async function probeLegend(page) {
   return page.evaluate(`(() => {
     const c = ${MAIN};
     const items = Array.from(c.container.querySelectorAll('.highcharts-legend-item'));
-    if (!items.length) throw new Error('legend probe found no legend items');
+    // Not every interactive has a legend, so an empty list is recorded rather than
+    // raised. The A/B still compares it, so a legend that DISAPPEARS between the two
+    // passes shows up as itemCount changing.
+    if (!items.length) return { itemCount: 0, hovers: [], afterMouseOut: c.container.innerHTML };
     const fire = (el, type) => el.dispatchEvent(
       new MouseEvent(type, { bubbles: true, cancelable: true, view: window }));
     const out = [];
@@ -152,8 +159,11 @@ async function probeControls(page) {
 async function probeExport(page) {
   return page.evaluate(`(() => {
     const c = ${MAIN};
+    // getSVG only exists when the exporting module is loaded; not every
+    // interactive pulls it in.
+    if (typeof c.getSVG !== 'function') return { exportSvg: null, exportingLoaded: false };
     const eo = (c.options.exporting && c.options.exporting.chartOptions) || {};
-    return { exportSvg: c.getSVG(eo) };
+    return { exportSvg: c.getSVG(eo), exportingLoaded: true };
   })()`);
 }
 
