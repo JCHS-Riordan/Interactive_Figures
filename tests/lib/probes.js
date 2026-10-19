@@ -10,6 +10,44 @@
  * invisible, which has happened in this project before.
  */
 
+/** The main chart on the page (the first one with points). */
+const MAIN = `(function () {
+  return (window.Highcharts && Highcharts.charts || [])
+    .filter(Boolean)
+    .find(c => c.series && c.series.some(s => s.points && s.points.length));
+})()`;
+
+/**
+ * Wait until the chart stops changing, rather than for a fixed delay.
+ *
+ * Highcharts animates series updates, legend hover states and map transforms over
+ * roughly a second, writing intermediate values into the SVG as it goes (opacity
+ * mid-fade, and an `animator` attribute carrying animation progress). Snapshotting
+ * during that window captures an arbitrary frame, so the control and candidate
+ * passes disagree about a value neither the package nor the data decided - which
+ * made every interactive report a false difference.
+ *
+ * Polling for a stable serialization handles this regardless of which animation
+ * mechanism produced it, and costs only as long as the animation actually takes.
+ */
+const SETTLE = `async function settle(maxMs) {
+  const c = ${MAIN};
+  const deadline = Date.now() + (maxMs || 4000);
+  let last = null, stableFor = 0;
+  while (Date.now() < deadline) {
+    const now = c.container.innerHTML;
+    if (now === last) {
+      stableFor++;
+      if (stableFor >= 2) return true;
+    } else {
+      stableFor = 0;
+      last = now;
+    }
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return false;
+}`;
+
 const READY = `(async () => {
   const deadline = Date.now() + TIMEOUT;
   while (Date.now() < deadline) {
@@ -27,15 +65,15 @@ async function waitForChart(page, timeoutMs) {
   if (!ok) throw new Error('chart never initialised within ' + timeoutMs + 'ms');
 }
 
-/** The main chart on the page (the first one with points). */
-const MAIN = `(function () {
-  return (window.Highcharts && Highcharts.charts || [])
-    .filter(Boolean)
-    .find(c => c.series && c.series.some(s => s.points && s.points.length));
-})()`;
+/** Let any entry animation finish before anything is snapshotted. */
+async function settlePage(page, maxMs) {
+  return page.evaluate(`(async () => { ${SETTLE} return settle(${maxMs || 4000}); })()`);
+}
 
 async function probeInitial(page) {
-  return page.evaluate(`(() => {
+  return page.evaluate(`(async () => {
+    ${SETTLE}
+    await settle();
     const c = ${MAIN};
     return { svg: c.container.innerHTML, chartCount: Highcharts.charts.filter(Boolean).length };
   })()`);
@@ -64,7 +102,8 @@ async function probeChrome(page) {
  * open unconditionally - a false pass.
  */
 async function probeHover(page) {
-  return page.evaluate(`(() => {
+  return page.evaluate(`(async () => {
+    ${SETTLE}
     const c = ${MAIN};
     const s = c.series.find(s => s.points && s.points.length);
     // Map points always carry their own graphic; line and area series usually have
@@ -79,6 +118,7 @@ async function probeHover(page) {
     for (const i of pick) {
       const p = pts[i];
       p.onMouseOver();
+      await settle(2000);
       const cs = p.graphic ? getComputedStyle(p.graphic.element) : null;
       out.push({
         name: p.name != null ? String(p.name) : String(p.category),
@@ -93,6 +133,7 @@ async function probeHover(page) {
       });
     }
     if (c.tooltip && c.tooltip.hide) c.tooltip.hide(0);
+    await settle(2000);
     return { points: out, pointsRendered: pts.length };
   })()`);
 }
@@ -103,7 +144,8 @@ async function probeHover(page) {
  * effect is captured as the whole redrawn SVG, which catches whatever it changed.
  */
 async function probeLegend(page) {
-  return page.evaluate(`(() => {
+  return page.evaluate(`(async () => {
+    ${SETTLE}
     const c = ${MAIN};
     const items = Array.from(c.container.querySelectorAll('.highcharts-legend-item'));
     // Not every interactive has a legend, so an empty list is recorded rather than
@@ -115,41 +157,47 @@ async function probeLegend(page) {
     const out = [];
     for (let i = 0; i < Math.min(items.length, 6); i++) {
       fire(items[i], 'mouseover');
+      await settle(2500);
       const hovered = c.container.innerHTML;
       fire(items[i], 'mouseout');
+      await settle(2500);
       out.push({ index: i, hoveredSvg: hovered });
     }
     return { itemCount: items.length, hovers: out, afterMouseOut: c.container.innerHTML };
   })()`);
 }
 
-/** The package renders radio buttons and search boxes; toggling each is a behaviour change. */
+/** The package renders radio buttons and sliders; toggling each is a behaviour change. */
 async function probeControls(page) {
   return page.evaluate(`(async () => {
+    ${SETTLE}
     const c = ${MAIN};
     const radios = Array.from(document.querySelectorAll('#form_wrapper input[type=radio], .JCHS-chart__user-input input[type=radio]'));
     const sliders = Array.from(document.querySelectorAll('.JCHS-chart__slider'));
-    const settle = () => new Promise(r => setTimeout(r, 400));
     const out = { radioCount: radios.length, sliderCount: sliders.length, radios: [], sliders: [] };
     const initiallyChecked = radios.findIndex(r => r.checked);
     for (let i = 0; i < Math.min(radios.length, 6); i++) {
-      radios[i].click(); await settle();
+      radios[i].click();
+      await settle(3000);
       out.radios.push({ index: i, id: radios[i].id || null, svg: c.container.innerHTML });
     }
-    if (initiallyChecked >= 0 && radios[initiallyChecked]) { radios[initiallyChecked].click(); await settle(); }
+    if (initiallyChecked >= 0 && radios[initiallyChecked]) {
+      radios[initiallyChecked].click();
+      await settle(3000);
+    }
     for (const sl of sliders.slice(0, 1)) {
       const min = Number(sl.min || 0), max = Number(sl.max || 0), start = sl.value;
       for (const v of [min, max]) {
         sl.value = String(v);
         sl.dispatchEvent(new Event('input', { bubbles: true }));
         sl.dispatchEvent(new Event('change', { bubbles: true }));
-        await settle();
+        await settle(3000);
         out.sliders.push({ value: String(v), svg: c.container.innerHTML });
       }
       sl.value = start;
       sl.dispatchEvent(new Event('input', { bubbles: true }));
       sl.dispatchEvent(new Event('change', { bubbles: true }));
-      await settle();
+      await settle(3000);
     }
     return out;
   })()`);
@@ -169,6 +217,7 @@ async function probeExport(page) {
 
 module.exports = {
   waitForChart,
+  settlePage,
   probes: [
     { name: 'initial', run: probeInitial },
     { name: 'chrome', run: probeChrome },

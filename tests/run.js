@@ -7,7 +7,7 @@ const { chromium } = require('playwright');
 const { discover, assemblePage } = require('./lib/corpus');
 const { startServer } = require('./lib/server');
 const { normalizeSnapshot } = require('./lib/normalize');
-const { waitForChart, probes } = require('./lib/probes');
+const { waitForChart, settlePage, probes } = require('./lib/probes');
 const { compare, render } = require('./lib/diff');
 
 const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8'));
@@ -218,7 +218,10 @@ async function runPass(browser, origin, item, mode, cache) {
     await page.close();
     throw new Error(detail);
   }
-  await page.waitForTimeout(400);
+  // Entry animations write intermediate values into the SVG; snapshotting before
+  // they finish captures an arbitrary frame and the two passes disagree about a
+  // value neither the package nor the data decided.
+  await settlePage(page, 6000);
 
   const snapshot = {};
   for (const probe of probes) {
@@ -227,7 +230,7 @@ async function runPass(browser, origin, item, mode, cache) {
 
   for (const vp of cfg.viewports.slice(1)) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    await page.waitForTimeout(600);
+    await settlePage(page, 6000);
     snapshot['reflow:' + vp.name] = await page.evaluate(
       '(function () {' +
         'var c = (Highcharts.charts || []).filter(Boolean).find(function (c) {' +
@@ -237,7 +240,7 @@ async function runPass(browser, origin, item, mode, cache) {
     );
   }
   await page.setViewportSize(cfg.viewports[0]);
-  await page.waitForTimeout(400);
+  await settlePage(page, 6000);
 
   fs.mkdirSync(path.join(outDir, item.name), { recursive: true });
   await page.screenshot({ path: path.join(outDir, item.name, mode + '.png'), fullPage: true });
