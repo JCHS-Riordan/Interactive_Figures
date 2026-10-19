@@ -4,7 +4,7 @@
 
     chart: {
       margin: [10,5,10,5], 
-      marginTop: 40, //needed to override individual settings as well
+      marginTop: 10, //needed to override individual settings as well
       marginBottom: 10 //needed to override individual settings as well
     }, //end chart
 

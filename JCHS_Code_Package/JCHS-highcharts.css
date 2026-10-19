@@ -16,13 +16,13 @@
    wins on document order, exactly as it did before the null-point fix.
 
    A pen that overrides these classes AND uses nullColor needs its own
-   :not(.highcharts-null-point) on its copy of these rules - this file's
+   :where(:not(.highcharts-null-point)) on its copy of these rules - this file's
    version only protects charts using the un-overridden defaults below. */
-.highcharts-color-0:not(.highcharts-null-point) { fill: #8cb7c7; stroke: #8cb7c7; }
-.highcharts-color-1:not(.highcharts-null-point) { fill: #e0ba1b; stroke: #e0ba1b; }
-.highcharts-color-2:not(.highcharts-null-point) { fill: #3b1f2e; stroke: #3b1f2e; }
-.highcharts-color-3:not(.highcharts-null-point) { fill: #998b7d; stroke: #998b7d; }
-.highcharts-color-4:not(.highcharts-null-point) { fill: #c1b9b1; stroke: #c1b9b1; }
+.highcharts-color-0:where(:not(.highcharts-null-point)) { fill: #8cb7c7; stroke: #8cb7c7; }
+.highcharts-color-1:where(:not(.highcharts-null-point)) { fill: #e0ba1b; stroke: #e0ba1b; }
+.highcharts-color-2:where(:not(.highcharts-null-point)) { fill: #3b1f2e; stroke: #3b1f2e; }
+.highcharts-color-3:where(:not(.highcharts-null-point)) { fill: #998b7d; stroke: #998b7d; }
+.highcharts-color-4:where(:not(.highcharts-null-point)) { fill: #c1b9b1; stroke: #c1b9b1; }
 
 /* Highcharts 13 puts the highcharts-color-N class on the legend item's
    wrapping <g>, not on the swatch itself, and colors the swatch via a
