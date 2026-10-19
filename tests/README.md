@@ -114,3 +114,40 @@ through untouched.
   or no legend items raises a harness error rather than passing quietly.
 - **The S3 package sits behind a cache** that a hard refresh does not always bypass, so
   the control pass cache-busts its fetch of the package files.
+- **Highcharts' CDN blocks the runners.** `code.highcharts.com` 403s a request with no
+  `Referer` and evidently refuses GitHub's runner IPs outright. A 403 body delivered to
+  a `<script>` tag is not JavaScript, so the browser reports `net::ERR_BLOCKED_BY_ORB`
+  and Highcharts is simply never defined. Those URLs are fetched from Node instead
+  (`nodeFetchPrefixes` in `config.json`), which is not subject to ORB and lets the
+  headers be set. Any other hotlink-protected dependency will need the same entry.
+- **Animations make snapshots non-deterministic.** Highcharts animates series updates,
+  legend hover and map transforms over about a second, writing intermediate values into
+  the SVG (`animator="0.93"`, mid-fade `opacity`). Snapshotting during that window
+  captures an arbitrary frame and both passes disagree about a value neither the package
+  nor the data decided. Every snapshot therefore waits for the serialized SVG to stop
+  changing. Note this waits rather than disabling animation — turning animation off
+  would test a configuration that is never shipped, and real bugs in this project have
+  lived specifically in the hover/animation path.
+- **Every route branch must terminate.** A handler that throws without calling
+  `fulfill`/`continue`/`abort` leaves the request pending forever, and a hung `<script>`
+  presents as "nothing rendered" with no error to go on.
+
+## Verified
+
+The gate was exercised end to end on 2026-10-19 rather than assumed to work:
+
+| state of the package | result |
+| --- | --- |
+| unmodified | PASS — 4 of 4 identical across 8 probes |
+| two deliberate regressions | FAIL — 4 of 4, across 22 probe/interactive combinations |
+| regressions reverted | PASS — back to 4 of 4 identical |
+
+The two regressions were chosen to be different in kind: the `:where()` to `:not()`
+specificity revert (a colour change) and `marginTop` 10 to 40 in the map options (pure
+geometry). Both were caught, with the diff naming the attribute in each case.
+
+One result worth keeping: on `Homebuyer_Affordability`, a line chart, the colour
+regression surfaced **only** in the `export` probe — its on-screen initial render was
+unchanged, because the stroke colour reaches the SVG by a different path there. A check
+that only compared colours on initial render would have missed that interactive
+entirely. That is the argument for keeping the probe set broad.
